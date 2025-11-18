@@ -1,0 +1,74 @@
+/**
+ * Estilos comunes y generales
+ */
+
+/* Ajustes de WordPress */
+.entry-content .wp-block-columns,
+.entry-content .wp-block-column {
+    max-width: none !important;
+}
+
+.wp-block-post-title {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+/* Botones */
+.entrapolis-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background: #f5f5f5;
+    color: #333;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    transition: background 0.3s ease;
+}
+
+.entrapolis-btn:hover {
+    background: #e0e0e0;
+    color: #333;
+}
+
+.entrapolis-btn-primary {
+    background: #acf3a3;
+    color: #000000;
+}
+
+.entrapolis-btn-primary:hover {
+    background: #6cbe61;
+    color: #000000;
+}
+
+.entrapolis-event-buy-link {
+    display: inline-block;
+    padding: 12px 24px;
+    background: #acf3a3;
+    color: #000000;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: background 0.3s ease;
+}
+
+.entrapolis-event-buy-link:hover {
+    background: #6cbe61;
+    color: #000000;
+}
+
+/* Mensajes de error y vacío */
+.entrapolis-error {
+    padding: 20px;
+    background: #fee;
+    color: #c00;
+    border-radius: 4px;
+    margin: 20px 0;
+}
+
+.entrapolis-empty {
+    padding: 20px;
+    background: #f9f9f9;
+    color: #666;
+    text-align: center;
+    border-radius: 4px;
+}

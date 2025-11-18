@@ -1,0 +1,222 @@
+/**
+ * Estilos del calendario de eventos
+ */
+
+.entrapolis-calendar {
+    margin-bottom: 40px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    padding: 20px;
+    position: relative;
+}
+
+.entrapolis-calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.entrapolis-calendar-month-name {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #333;
+    text-transform: capitalize;
+}
+
+.entrapolis-calendar-prev,
+.entrapolis-calendar-next {
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: #acf3a3;
+    color: #000;
+    font-size: 1.5rem;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.entrapolis-calendar-prev:hover:not(:disabled),
+.entrapolis-calendar-next:hover:not(:disabled) {
+    background: #6cbe61;
+    transform: scale(1.1);
+}
+
+.entrapolis-calendar-prev:disabled,
+.entrapolis-calendar-next:disabled {
+    background: #e0e0e0;
+    color: #999;
+    cursor: not-allowed;
+}
+
+.entrapolis-calendar-container {
+    position: relative;
+    min-height: 100px;
+    overflow: visible;
+}
+
+.entrapolis-calendar-month {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+.entrapolis-calendar-day {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 70px;
+    border-radius: 8px;
+    background: #f5f5f5;
+    cursor: default;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.entrapolis-calendar-day.has-events {
+    background: #acf3a3;
+    cursor: pointer;
+}
+
+.entrapolis-calendar-day.has-events:hover {
+    background: #6cbe61;
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 100;
+}
+
+.entrapolis-calendar-day-name {
+    font-size: 0.7rem;
+    color: #666;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.entrapolis-calendar-day.has-events .entrapolis-calendar-day-name {
+    color: #000;
+}
+
+.entrapolis-calendar-day-number {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #333;
+}
+
+.entrapolis-calendar-day.has-events .entrapolis-calendar-day-number {
+    color: #000;
+}
+
+/* Tooltip del calendario */
+.entrapolis-calendar-tooltip {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+    padding: 15px;
+    min-width: 250px;
+    max-width: 350px;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    pointer-events: none;
+}
+
+.entrapolis-calendar-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 8px solid transparent;
+    border-top-color: #fff;
+}
+
+.entrapolis-calendar-day.has-events:hover .entrapolis-calendar-tooltip {
+    opacity: 1;
+    visibility: visible;
+}
+
+.entrapolis-calendar-tooltip-event {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.entrapolis-calendar-tooltip-event:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.entrapolis-calendar-tooltip-event:first-child {
+    padding-top: 0;
+}
+
+.entrapolis-calendar-tooltip-event img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.entrapolis-calendar-tooltip-content {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+}
+
+.entrapolis-calendar-tooltip-content strong {
+    font-size: 0.9rem;
+    color: #333;
+    line-height: 1.2;
+}
+
+.entrapolis-calendar-tooltip-content span {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+/* Responsive para calendario */
+@media (max-width: 768px) {
+    .entrapolis-calendar {
+        padding: 15px;
+    }
+    
+    .entrapolis-calendar-month-name {
+        font-size: 1.1rem;
+    }
+    
+    .entrapolis-calendar-prev,
+    .entrapolis-calendar-next {
+        width: 35px;
+        height: 35px;
+        font-size: 1.2rem;
+    }
+    
+    .entrapolis-calendar-day {
+        width: 50px;
+        height: 60px;
+    }
+    
+    .entrapolis-calendar-tooltip {
+        min-width: 200px;
+    }
+}

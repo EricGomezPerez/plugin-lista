@@ -1,0 +1,77 @@
+/**
+ * Estilos del detalle de evento
+ */
+
+.entrapolis-event-detail {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 30px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    display: block !important;
+}
+
+.entrapolis-event-detail-container {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+}
+
+.entrapolis-event-detail .entrapolis-event-image {
+    flex: 0 0 350px;
+    margin: 0 !important;
+}
+
+.entrapolis-event-detail .entrapolis-event-image img {
+    height: 300px !important;
+    max-height: 350px !important;
+    object-fit: cover !important;
+    border-radius: 8px;
+    display: block !important;
+}
+
+.entrapolis-event-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.entrapolis-event-detail .entrapolis-event-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0 !important;
+    color: #333;
+    line-height: 1.2;
+}
+
+.entrapolis-event-detail .entrapolis-event-date,
+.entrapolis-event-detail .entrapolis-event-location {
+    font-size: 1.1rem;
+    color: #666;
+    margin: 0 !important;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.entrapolis-event-detail .entrapolis-event-actions {
+    margin: 20px 0 0 !important;
+}
+
+/* Responsive para detalle */
+@media (max-width: 768px) {
+    .entrapolis-event-detail-container {
+        flex-direction: column;
+    }
+    
+    .entrapolis-event-detail .entrapolis-event-image {
+        flex: 0 0 auto;
+        width: 100%;
+    }
+    
+    .entrapolis-event-detail .entrapolis-event-title {
+        font-size: 1.8rem;
+    }
+}

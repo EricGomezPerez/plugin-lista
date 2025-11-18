@@ -1,0 +1,48 @@
+<?php
+/**
+ * Plugin Name: Entrapolis Integration
+ * Description: Plugin para integrar eventos de Entrapolis con calendario, listado y detalle
+ * Version: 0.2.0
+ * Author: Perception
+ * Text Domain: entrapolis
+ */
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+// Configurar locale en español
+setlocale(LC_TIME, 'es_ES.UTF-8', 'es_ES', 'spanish');
+
+// Definir constantes
+define('ENTRAPOLIS_PLUGIN_DIR', plugin_dir_path(__FILE__));
+define('ENTRAPOLIS_PLUGIN_URL', plugin_dir_url(__FILE__));
+define('ENTRAPOLIS_API_BASE', 'http://www.entrapolis.com');
+define('ENTRAPOLIS_ORG_ID', 2910);
+define('ENTRAPOLIS_API_TOKEN', '2b8b8b22b0842b1f40380a35a115839a8531f7e18451855321112b4a117a85a1');
+
+// Cargar archivos necesarios
+require_once ENTRAPOLIS_PLUGIN_DIR . 'includes/class-entrapolis-api.php';
+require_once ENTRAPOLIS_PLUGIN_DIR . 'includes/functions.php';
+require_once ENTRAPOLIS_PLUGIN_DIR . 'includes/shortcodes/class-entrapolis-calendar.php';
+require_once ENTRAPOLIS_PLUGIN_DIR . 'includes/shortcodes/class-entrapolis-events-list.php';
+require_once ENTRAPOLIS_PLUGIN_DIR . 'includes/shortcodes/class-entrapolis-event-detail.php';
+require_once ENTRAPOLIS_PLUGIN_DIR . 'includes/shortcodes/class-entrapolis-buy-widget.php';
+
+/**
+ * Activación del plugin
+ */
+function entrapolis_activate()
+{
+    flush_rewrite_rules();
+}
+register_activation_hook(__FILE__, 'entrapolis_activate');
+
+/**
+ * Desactivación del plugin
+ */
+function entrapolis_deactivate()
+{
+    flush_rewrite_rules();
+}
+register_deactivation_hook(__FILE__, 'entrapolis_deactivate');
