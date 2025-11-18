@@ -209,10 +209,8 @@
 /* Calendario */
 .entrapolis-calendar {
     margin-bottom: 40px;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    padding: 20px;
+    background: transparent;
+    padding: 20px 0;
     position: relative;
     width: 100% !important;
     max-width: 100% !important;
@@ -221,45 +219,43 @@
 .entrapolis-calendar-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid #f0f0f0;
+    gap: 5px;
 }
 
 .entrapolis-calendar-month-name {
-    font-size: 1.3rem;
-    font-weight: 700;
+    font-size: 0.85rem;
+    font-weight: 600;
     color: #333;
     text-transform: capitalize;
+    white-space: nowrap;
 }
 
 .entrapolis-calendar-prev,
 .entrapolis-calendar-next {
-    width: 40px;
-    height: 40px;
+    width: 24px;
+    height: 24px;
     border: none;
-    background: #acf3a3;
-    color: #000;
-    font-size: 1.5rem;
-    border-radius: 50%;
+    background: transparent;
+    color: #333;
+    font-size: 1.2rem;
+    border-radius: 4px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: background 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
+    padding: 0;
 }
 
 .entrapolis-calendar-prev:hover:not(:disabled),
 .entrapolis-calendar-next:hover:not(:disabled) {
-    background: #6cbe61;
-    transform: scale(1.1);
+    background: rgba(0, 0, 0, 0.05);
 }
 
 .entrapolis-calendar-prev:disabled,
 .entrapolis-calendar-next:disabled {
-    background: #e0e0e0;
-    color: #999;
+    color: #ccc;
     cursor: not-allowed;
 }
 
@@ -292,12 +288,21 @@
     transition: all 0.3s ease;
 }
 
+.entrapolis-calendar-day.is-today {
+    background: #d0d0d0;
+}
+
 .entrapolis-calendar-day.has-events {
     background: #acf3a3;
     cursor: pointer;
 }
 
-.entrapolis-calendar-day.has-events:hover {
+.entrapolis-calendar-day.has-events.is-today {
+    background: #7ec574;
+}
+
+.entrapolis-calendar-day.has-events:hover,
+.entrapolis-calendar-day.has-events.is-today:hover {
     background: #6cbe61;
     transform: translateY(-3px);
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
@@ -305,7 +310,15 @@
 }
 
 .entrapolis-calendar-day-name {
-    display: none;
+    font-size: 0.7rem;
+    color: #666;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.entrapolis-calendar-day.has-events .entrapolis-calendar-day-name {
+    color: #000;
 }
 
 .entrapolis-calendar-day-number {

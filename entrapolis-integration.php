@@ -328,14 +328,19 @@ function entrapolis_shortcode_calendar($atts)
         $interval = new DateInterval('P1D');
         $period = new DatePeriod($first_day, $interval, $last_day->modify('+1 day'));
 
+        $days_catalan = array('Dg', 'Dl', 'Dt', 'Dc', 'Dj', 'Dv', 'Ds');
+        $today = date('Y-m-d');
+
         foreach ($period as $date) {
             $date_str = $date->format('Y-m-d');
+            $day_of_week = $date->format('w'); // 0 (domingo) a 6 (sábado)
             $days[] = array(
                 'date' => $date_str,
                 'day_num' => $date->format('j'),
-                'day_name' => strftime('%a', $date->getTimestamp()),
+                'day_name' => $days_catalan[$day_of_week],
                 'has_events' => isset($events_by_date[$date_str]),
                 'events' => isset($events_by_date[$date_str]) ? $events_by_date[$date_str] : array(),
+                'is_today' => $date_str === $today,
             );
         }
 
@@ -349,18 +354,21 @@ function entrapolis_shortcode_calendar($atts)
     ob_start();
     ?>
     <div class="entrapolis-calendar" data-current-month="0">
-        <div class="entrapolis-calendar-header">
-            <button class="entrapolis-calendar-prev" aria-label="Mes anterior">‹</button>
-            <div class="entrapolis-calendar-month-name"></div>
-            <button class="entrapolis-calendar-next" aria-label="Mes següent">›</button>
-        </div>
-
         <div class="entrapolis-calendar-container">
             <?php foreach ($months_data as $index => $month): ?>
                 <div class="entrapolis-calendar-month" data-month-index="<?php echo $index; ?>"
                     style="display: <?php echo $index === 0 ? 'flex' : 'none'; ?>;">
-                    <?php foreach ($month['days'] as $day): ?>
-                        <div class="entrapolis-calendar-day <?php echo $day['has_events'] ? 'has-events' : ''; ?>"
+                    <div class="entrapolis-calendar-header">
+                        <button class="entrapolis-calendar-prev" aria-label="Mes anterior">‹</button>
+                        <div class="entrapolis-calendar-month-name"><?php echo esc_html($month['name']); ?></div>
+                        <button class="entrapolis-calendar-next" aria-label="Mes següent">›</button>
+                    </div>
+                    <?php foreach ($month['days'] as $day): 
+                        $classes = array('entrapolis-calendar-day');
+                        if ($day['has_events']) $classes[] = 'has-events';
+                        if ($day['is_today']) $classes[] = 'is-today';
+                    ?>
+                        <div class="<?php echo implode(' ', $classes); ?>"
                             data-date="<?php echo esc_attr($day['date']); ?>">
                             <div class="entrapolis-calendar-day-name"><?php echo esc_html($day['day_name']); ?></div>
                             <div class="entrapolis-calendar-day-number"><?php echo esc_html($day['day_num']); ?></div>
@@ -411,22 +419,25 @@ function entrapolis_shortcode_calendar($atts)
                 months.forEach((month, index) => {
                     month.style.display = index === currentMonth ? 'flex' : 'none';
                 });
-                monthName.textContent = monthNames[currentMonth];
-                prevBtn.disabled = currentMonth === 0;
-                nextBtn.disabled = currentMonth === months.length - 1;
+
+                const prevBtns = calendar.querySelectorAll('.entrapolis-calendar-prev');
+                const nextBtns = calendar.querySelectorAll('.entrapolis-calendar-next');
+
+                prevBtns.forEach(btn => btn.disabled = currentMonth === 0);
+                nextBtns.forEach(btn => btn.disabled = currentMonth === months.length - 1);
             }
 
-            prevBtn.addEventListener('click', () => {
-                if (currentMonth > 0) {
-                    currentMonth--;
-                    updateCalendar();
-                }
-            });
-
-            nextBtn.addEventListener('click', () => {
-                if (currentMonth < months.length - 1) {
-                    currentMonth++;
-                    updateCalendar();
+            calendar.addEventListener('click', (e) => {
+                if (e.target.classList.contains('entrapolis-calendar-prev')) {
+                    if (currentMonth > 0) {
+                        currentMonth--;
+                        updateCalendar();
+                    }
+                } else if (e.target.classList.contains('entrapolis-calendar-next')) {
+                    if (currentMonth < months.length - 1) {
+                        currentMonth++;
+                        updateCalendar();
+                    }
                 }
             });
 
