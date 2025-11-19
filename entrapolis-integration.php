@@ -10,15 +10,20 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-// Configurar locale en español
+/*
+Configuración de Locale en español
+*/
 setlocale(LC_TIME, 'es_ES.UTF-8', 'es_ES', 'spanish');
 
+/*
+Definiciones de constantes
+*/
 define('ENTRAPOLIS_API_BASE', 'http://www.entrapolis.com');
 define('ENTRAPOLIS_ORG_ID', 2910);
 define('ENTRAPOLIS_API_TOKEN', '2b8b8b22b0842b1f40380a35a115839a8531f7e18451855321112b4a117a85a1');
 
 /**
- * Enqueue styles
+ * Linkear los estilos CSS
  */
 function entrapolis_enqueue_styles()
 {
@@ -26,6 +31,27 @@ function entrapolis_enqueue_styles()
         'entrapolis-styles',
         plugins_url('entrapolis-styles.css', __FILE__),
         array(),
+        '0.1.0'
+    );
+
+    wp_enqueue_style(
+        'entrapolis-styles-calendar',
+        plugins_url('entrapolis-styles-calendar.css', __FILE__),
+        array('entrapolis-styles'),
+        '0.1.0'
+    );
+
+    wp_enqueue_style(
+        'entrapolis-styles-detail',
+        plugins_url('entrapolis-styles-detail.css', __FILE__),
+        array('entrapolis-styles'),
+        '0.1.0'
+    );
+
+    wp_enqueue_style(
+        'entrapolis-styles-button',
+        plugins_url('entrapolis-styles-button.css', __FILE__),
+        array('entrapolis-styles'),
         '0.1.0'
     );
 }
@@ -96,13 +122,32 @@ function entrapolis_shortcode_events($atts)
         set_transient($cache_key, $events, 5 * 60);
     }
 
+    // Agrupar eventos por título e imagen
+    $grouped_events = array();
+    foreach ($events as $event) {
+        $key = $event['title'] . '|' . $event['image'];
+        if (!isset($grouped_events[$key])) {
+            $grouped_events[$key] = array(
+                'title' => $event['title'],
+                'image' => $event['image'],
+                'url' => $event['url'],
+                'url_widget' => $event['url_widget'],
+                'dates' => array(),
+                'ids' => array(),
+            );
+        }
+        $grouped_events[$key]['dates'][] = $event['date_readable'];
+        $grouped_events[$key]['ids'][] = $event['id'];
+    }
+
     ob_start();
     ?>
     <div class="entrapolis-events-list">
-        <?php foreach ($events as $event):
-            $id = intval($event['id']);
+        <?php foreach ($grouped_events as $event):
+            $id = intval($event['ids'][0]); // Usar el primer ID para el enlace
             $title = esc_html($event['title']);
-            $date = esc_html($event['date_readable']);
+            $date_count = count($event['dates']);
+            $date_display = $date_count > 1 ? $date_count . ' dates disponibles' : esc_html($event['dates'][0]);
             $image = !empty($event['image']) ? str_replace('https://www.entrapolis.com/', 'https://cdn.perception.es/v7/_ep/', $event['image']) : '';
             $url = !empty($event['url']) ? $event['url'] : '';
             $url_widget = !empty($event['url_widget']) ? $event['url_widget'] : '';
@@ -119,7 +164,7 @@ function entrapolis_shortcode_events($atts)
                 <?php endif; ?>
 
                 <h3 class="entrapolis-event-title"><?php echo $title; ?></h3>
-                <p class="entrapolis-event-date"><?php echo $date; ?></p>
+                <p class="entrapolis-event-date"><?php echo $date_display; ?></p>
 
                 <div class="entrapolis-event-actions">
                     <?php if ($detail_url): ?>
@@ -174,10 +219,36 @@ function entrapolis_shortcode_event_detail($atts)
     }
 
     $event = $result['event'];
-    $title = esc_html($event['title']);
-    $date = esc_html($event['date_readable']);
+    $title = $event['title'];
+    $image = $event['image'];
+
+    // Obtener todos los eventos con el mismo título e imagen
+    $cache_key = 'entrapolis_events_' . ENTRAPOLIS_ORG_ID;
+    $all_events = get_transient($cache_key);
+
+    if ($all_events === false) {
+        $all_result = entrapolis_api_post('/api/events/', array(
+            'application_id' => ENTRAPOLIS_ORG_ID,
+        ));
+        if (!is_wp_error($all_result) && !empty($all_result['events'])) {
+            $all_events = $all_result['events'];
+            set_transient($cache_key, $all_events, 5 * 60);
+        } else {
+            $all_events = array();
+        }
+    }
+
+    // Filtrar eventos con mismo título e imagen
+    $related_events = array();
+    foreach ($all_events as $evt) {
+        if ($evt['title'] === $title && $evt['image'] === $image) {
+            $related_events[] = $evt;
+        }
+    }
+
+    $title = esc_html($title);
     $location = isset($event['location']) ? esc_html($event['location']) : '';
-    $image = !empty($event['image']) ? str_replace('https://www.entrapolis.com/', 'https://cdn.perception.es/v7/_ep/', $event['image']) : '';
+    $image = !empty($image) ? str_replace('https://www.entrapolis.com/', 'https://cdn.perception.es/v7/_ep/', $image) : '';
     $url_widget = !empty($event['url_widget']) ? $event['url_widget'] : '';
     $url = !empty($event['url']) ? $event['url'] : '';
 
@@ -193,8 +264,46 @@ function entrapolis_shortcode_event_detail($atts)
 
             <div class="entrapolis-event-info">
                 <h2 class="entrapolis-event-title"><?php echo $title; ?></h2>
-                <?php if ($date): ?>
-                    <div class="entrapolis-event-date">📅 <?php echo $date; ?></div>
+                <?php if (!empty($related_events)): ?>
+                    <div class="entrapolis-event-dates">
+                        <strong>Dates disponibles:</strong>
+                        <ul class="entrapolis-dates-list">
+                            <?php
+                            $months_catalan = array(
+                                1 => 'gener',
+                                2 => 'febrer',
+                                3 => 'març',
+                                4 => 'abril',
+                                5 => 'maig',
+                                6 => 'juny',
+                                7 => 'juliol',
+                                8 => 'agost',
+                                9 => 'setembre',
+                                10 => 'octubre',
+                                11 => 'novembre',
+                                12 => 'desembre'
+                            );
+
+                            foreach ($related_events as $rel_evt):
+                                preg_match('/(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})/', $rel_evt['date_readable'], $matches);
+
+                                if ($matches) {
+                                    $year = $matches[1];
+                                    $month_num = intval($matches[2]);
+                                    $day = intval($matches[3]);
+                                    $hour = $matches[4];
+                                    $minute = $matches[5];
+
+                                    $month_name = isset($months_catalan[$month_num]) ? $months_catalan[$month_num] : $month_num;
+                                    $formatted_date = "$day de $month_name de $year a les $hour:$minute";
+                                } else {
+                                    $formatted_date = $rel_evt['date_readable'];
+                                }
+                                ?>
+                                <li><?php echo esc_html($formatted_date); ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
                 <?php endif; ?>
                 <!-- <?php if ($location): ?>
                     <div class="entrapolis-event-location">📍 <?php echo $location; ?></div>
@@ -363,22 +472,48 @@ function entrapolis_shortcode_calendar($atts)
                         <div class="entrapolis-calendar-month-name"><?php echo esc_html($month['name']); ?></div>
                         <button class="entrapolis-calendar-next" aria-label="Mes següent">›</button>
                     </div>
-                    <?php foreach ($month['days'] as $day): 
+                    <?php foreach ($month['days'] as $day):
                         $classes = array('entrapolis-calendar-day');
-                        if ($day['has_events']) $classes[] = 'has-events';
-                        if ($day['is_today']) $classes[] = 'is-today';
-                    ?>
-                        <div class="<?php echo implode(' ', $classes); ?>"
-                            data-date="<?php echo esc_attr($day['date']); ?>">
+                        if ($day['has_events'])
+                            $classes[] = 'has-events';
+                        if ($day['is_today'])
+                            $classes[] = 'is-today';
+                        ?>
+                        <div class="<?php echo implode(' ', $classes); ?>" data-date="<?php echo esc_attr($day['date']); ?>">
                             <div class="entrapolis-calendar-day-name"><?php echo esc_html($day['day_name']); ?></div>
                             <div class="entrapolis-calendar-day-number"><?php echo esc_html($day['day_num']); ?></div>
 
                             <?php if ($day['has_events']): ?>
                                 <div class="entrapolis-calendar-tooltip">
-                                    <?php foreach ($day['events'] as $event):
+                                    <?php
+                                    $months_catalan = array(
+                                        1 => 'gener',
+                                        2 => 'febrer',
+                                        3 => 'març',
+                                        4 => 'abril',
+                                        5 => 'maig',
+                                        6 => 'juny',
+                                        7 => 'juliol',
+                                        8 => 'agost',
+                                        9 => 'setembre',
+                                        10 => 'octubre',
+                                        11 => 'novembre',
+                                        12 => 'desembre'
+                                    );
+
+                                    foreach ($day['events'] as $event):
                                         $event_detail_url = '';
                                         if (!empty($atts['detail_page'])) {
                                             $event_detail_url = home_url('/' . sanitize_text_field($atts['detail_page']) . '/?entrapolis_event=' . intval($event['id']));
+                                        }
+
+                                        preg_match('/(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})/', $event['date_readable'], $matches);
+                                        if ($matches) {
+                                            $hour = $matches[4];
+                                            $minute = $matches[5];
+                                            $formatted_date = "$hour:$minute";
+                                        } else {
+                                            $formatted_date = $event['date_readable'];
                                         }
                                         ?>
                                         <a href="<?php echo esc_url($event_detail_url); ?>" class="entrapolis-calendar-tooltip-event">
@@ -389,7 +524,7 @@ function entrapolis_shortcode_calendar($atts)
                                             <?php endif; ?>
                                             <div class="entrapolis-calendar-tooltip-content">
                                                 <strong><?php echo esc_html($event['title']); ?></strong>
-                                                <span><?php echo esc_html($event['date_readable']); ?></span>
+                                                <span><?php echo esc_html($formatted_date); ?></span>
                                             </div>
                                         </a>
                                     <?php endforeach; ?>
