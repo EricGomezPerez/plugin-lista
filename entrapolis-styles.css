@@ -8,54 +8,165 @@
     margin-bottom: 50px;
 }
 
-.entrapolis-events-list {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 30px;
+/* Contenedor principal - 1905px */
+.entrapolis-events-wrapper {
     width: 100%;
-    max-width: 900px;
-    margin: 0 auto !important;
+    max-width: 1905px;
+    margin: 0 auto;
     padding: 0;
 }
 
-.entrapolis-event-item {
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.entrapolis-event-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-}
-
-.entrapolis-event-image {
+/* Contenedor de eventos - 1280px */
+.entrapolis-events-container {
     width: 100%;
-    height: 300px;
-    object-fit: cover;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0;
+}
+
+/* Grid de eventos - 2 columnas con gap */
+.entrapolis-events-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 35px;
+    width: 100%;
+}
+
+/* Card individual - 622.5px x 350px */
+.entrapolis-event-card {
+    width: 100%;
+    height: 350px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Link que cubre toda la card */
+.entrapolis-event-link {
     display: block;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+    color: inherit;
+    position: relative;
 }
 
-.entrapolis-event-title {
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin: 15px 20px 10px;
-    color: #333;
-}
-
-.entrapolis-event-date {
-    font-size: 0.9rem;
-    color: #666;
-    margin: 0 20px 15px;
-}
-
-.entrapolis-event-actions {
-    padding: 0 20px 20px;
+/* Figure con imagen de fondo */
+.entrapolis-event-figure {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
     display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+/* Categorías en la esquina superior izquierda */
+.entrapolis-event-categories {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    z-index: 3;
+}
+
+.entrapolis-event-categories li {
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.entrapolis-event-categories span {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 3px;
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+    color: #FFF;
+    opacity: 0.9;
+}
+
+/* Figcaption - 622.5px x 89.59px inicialmente */
+.entrapolis-event-caption {
+    width: 100%;
+    height: 89.59px;
+    padding: 10px 25px;
+    color: #FFFFFF;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: 2;
+    opacity: 0.9;
+    transition: height 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55), padding-top 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+/* Hover - expande a toda la card (350px) */
+.entrapolis-event-link:hover .entrapolis-event-caption {
+    height: 350px;
+    padding-top: 30px;
+}
+
+/* Título de la fecha */
+.entrapolis-event-caption h3.entrapolis-event-date {
+    font-size: 13px;
+    font-weight: normal;
+    margin: 0 0 10px 0;
+    color: #FFFFFF;
+}
+
+/* Título del evento */
+.entrapolis-event-caption h2.entrapolis-event-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0 0 10px 0;
+    color: #FFFFFF;
+}
+
+/* Descripción del evento */
+.entrapolis-event-caption p.entrapolis-event-excerpt {
+    font-size: 16px;
+    line-height: 1.4;
+    margin: 0;
+    color: #FFFFFF;
+    opacity: 0;
+    transition: opacity 0.3s ease 0.2s;
+}
+
+/* Mostrar descripción al hacer hover */
+.entrapolis-event-link:hover .entrapolis-event-caption p.entrapolis-event-excerpt {
+    opacity: 1;
+}
+
+/* Responsive */
+@media (max-width: 1280px) {
+    .entrapolis-events-wrapper {
+        max-width: 100%;
+        padding: 0 20px;
+    }
+    
+    .entrapolis-events-container {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .entrapolis-events-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .entrapolis-event-card {
+        height: 350px;
+    }
 }
 
 

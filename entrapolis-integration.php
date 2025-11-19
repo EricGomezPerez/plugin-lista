@@ -89,7 +89,7 @@ function entrapolis_api_post($endpoint, $body = array())
 
 /*
  * Shortcode per llistar esdeveniments
- * Usage: [entrapolis_events org="ORG_ID" detail_page="detail-page-slug"]
+ * Usage: [entrapolis_events org="ORG_ID" detail_page="detail-page-slug" limit="4"]
  */
 
 function entrapolis_shortcode_events($atts)
@@ -97,10 +97,12 @@ function entrapolis_shortcode_events($atts)
     $atts = shortcode_atts(array(
         'org' => ENTRAPOLIS_ORG_ID,
         'detail_page' => '',
+        'limit' => 4,
     ), $atts, 'entrapolis_events');
 
     $org_id = intval($atts['org']);
     $detail_page_slug = sanitize_text_field($atts['detail_page']);
+    $limit = intval($atts['limit']);
 
     $cache_key = 'entrapolis_events_' . $org_id;
     $events = get_transient($cache_key);
@@ -132,6 +134,8 @@ function entrapolis_shortcode_events($atts)
                 'image' => $event['image'],
                 'url' => $event['url'],
                 'url_widget' => $event['url_widget'],
+                'category' => isset($event['category']) ? $event['category'] : 'Generic',
+                'description' => isset($event['description']) ? $event['description'] : '',
                 'dates' => array(),
                 'ids' => array(),
             );
@@ -140,46 +144,96 @@ function entrapolis_shortcode_events($atts)
         $grouped_events[$key]['ids'][] = $event['id'];
     }
 
+    // Limitar eventos si se especifica
+    if ($limit > 0) {
+        $grouped_events = array_slice($grouped_events, 0, $limit);
+    }
+
+    // Mapeo de categorías a colores
+    $category_colors = array(
+        'Teatre' => '#ca1818',
+        'Ballet' => '#bf05a4',
+        'Música' => '#1a8cff',
+        'Teatre Familiar' => '#ea8b00',
+        'Dansa' => '#a1248e',
+        'Generic' => '#707070',
+    );
+
+    $months_catalan = array(
+        1 => 'gener',
+        2 => 'febrer',
+        3 => 'març',
+        4 => 'abril',
+        5 => 'maig',
+        6 => 'juny',
+        7 => 'juliol',
+        8 => 'agost',
+        9 => 'setembre',
+        10 => 'octubre',
+        11 => 'novembre',
+        12 => 'desembre'
+    );
+
     ob_start();
     ?>
-    <div class="entrapolis-events-list">
-        <?php foreach ($grouped_events as $event):
-            $id = intval($event['ids'][0]); // Usar el primer ID para el enlace
-            $title = esc_html($event['title']);
-            $date_count = count($event['dates']);
-            $date_display = $date_count > 1 ? $date_count . ' dates disponibles' : esc_html($event['dates'][0]);
-            $image = !empty($event['image']) ? str_replace('https://www.entrapolis.com/', 'https://cdn.perception.es/v7/_ep/', $event['image']) : '';
-            $url = !empty($event['url']) ? $event['url'] : '';
-            $url_widget = !empty($event['url_widget']) ? $event['url_widget'] : '';
+    <div class="entrapolis-events-wrapper">
+        <div class="entrapolis-events-container">
+            <div class="entrapolis-events-grid">
+                <?php foreach ($grouped_events as $event):
+                    $id = intval($event['ids'][0]);
+                    $title = esc_html($event['title']);
+                    $category = esc_html($event['category']);
+                    $description = esc_html($event['description']);
 
-            $detail_url = '';
-            if ($detail_page_slug) {
-                $detail_url = home_url('/' . $detail_page_slug . '/?entrapolis_event=' . $id);
-            }
-            ?>
-            <div class="entrapolis-event-item">
-                <?php if ($image): ?>
-                    <img src="<?php echo esc_url($image); ?>" alt="<?php echo $title; ?>" class="entrapolis-event-image">
+                    // Limitar descripción a 150 caracteres
+                    if (strlen($description) > 150) {
+                        $description = substr($description, 0, 150) . '…';
+                    }
 
-                <?php endif; ?>
+                    $image = !empty($event['image']) ? str_replace('https://www.entrapolis.com/', 'https://cdn.perception.es/v7/_ep/', $event['image']) : '';
 
-                <h3 class="entrapolis-event-title"><?php echo $title; ?></h3>
-                <p class="entrapolis-event-date"><?php echo $date_display; ?></p>
+                    // Obtener color de categoría
+                    $category_color = isset($category_colors[$category]) ? $category_colors[$category] : '#707070';
 
-                <div class="entrapolis-event-actions">
-                    <?php if ($detail_url): ?>
-                        <a href="<?php echo esc_url($detail_url); ?>" class="entrapolis-btn">Detall</a>
-                    <?php endif; ?>
-                    <?php if ($url): ?>
-                        <a href="<?php echo esc_url($url); ?>" class="entrapolis-btn" target="_blank">Més informació</a>
-                    <?php endif; ?>
-                    <?php if ($url_widget): ?>
-                        <a href="<?php echo esc_url($url_widget); ?>" class="entrapolis-btn entrapolis-btn-primary"
-                            target="_blank">Comprar entrades</a>
-                    <?php endif; ?>
-                </div>
+                    // Formatear primera fecha
+                    $first_date = $event['dates'][0];
+                    preg_match('/(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})/', $first_date, $matches);
+
+                    if ($matches) {
+                        $year = $matches[1];
+                        $month_num = intval($matches[2]);
+                        $day = intval($matches[3]);
+                        $hour = $matches[4];
+                        $minute = $matches[5];
+                        $month_name = isset($months_catalan[$month_num]) ? $months_catalan[$month_num] : $month_num;
+                        $formatted_date = "$day de $month_name de $year $hour:$minute";
+                    } else {
+                        $formatted_date = $first_date;
+                    }
+
+                    $detail_url = '';
+                    if ($detail_page_slug) {
+                        $detail_url = home_url('/' . $detail_page_slug . '/?entrapolis_event=' . $id);
+                    }
+                    ?>
+                    <div class="entrapolis-event-card">
+                        <a class="entrapolis-event-link" href="<?php echo esc_url($detail_url); ?>">
+                            <figure class="entrapolis-event-figure"
+                                style="background-image: url('<?php echo esc_url($image); ?>');">
+                                <figcaption class="entrapolis-event-caption"
+                                    style="background-color:<?php echo $category_color; ?>;">
+                                    <h3 class="entrapolis-event-date"><?php echo $formatted_date; ?></h3>
+                                    <h2 class="entrapolis-event-title"><?php echo $title; ?></h2>
+                                    <?php if ($description): ?>
+                                        <p class="entrapolis-event-excerpt"><?php echo $description; ?></p>
+                                    <?php endif; ?>
+                                </figcaption>
+                            </figure>
+                        </a>
+                    </div>
+                <?php endforeach; ?>
             </div>
-        <?php endforeach; ?>
+        </div>
     </div>
     <?php
     return ob_get_clean();
