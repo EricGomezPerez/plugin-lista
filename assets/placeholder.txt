@@ -1,0 +1,5 @@
+Este directorio puede contener screenshots y banner para WordPress.org o GitHub releases.
+
+Por ejemplo:
+- `banner-772x250.png` (WordPress.org)
+- `icon-128x128.png`

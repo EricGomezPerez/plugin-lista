@@ -54,7 +54,7 @@
 .entrapolis-event-figure {
     margin: 0;
     width: 100%;
-    height: 100%;
+    height: 350px;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -109,9 +109,9 @@
     justify-content: flex-start;
 }
 
-/* Hover - expande a toda la card (350px) */
+/* Hover - expande a casi toda la card (320px) */
 .entrapolis-event-link:hover .entrapolis-event-caption {
-    height: 350px;
+    height: 320px;
     padding-top: 30px;
 }
 

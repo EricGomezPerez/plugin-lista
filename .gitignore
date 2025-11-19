@@ -1,0 +1,21 @@
+/.vscode/
+/.idea/
+/node_modules/
+/vendor/
+.env
+.DS_Store
+Thumbs.db
+*.log
+debug.log
+*.sql
+*.zip
+composer.lock
+npm-debug.log
+
+# Ignore secrets and local config
+.env.local
+/.env.local
+
+# WordPress specific
+wp-config.php
+wp-content/uploads/
