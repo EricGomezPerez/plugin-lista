@@ -133,10 +133,12 @@ function entrapolis_shortcode_events_list($atts)
                             <?php endif; ?>
                         </td>
                         <td class="col-action">
-                            <a href="javascript:void(0);" class="entrapolis-btn-buy" data-event="<?php echo $id; ?>"
-                                onclick="event.stopPropagation();">
-                                Comprar entrades
-                            </a>
+                            <?php if ($buy_url): ?>
+                                <a href="javascript:void(0);" class="entrapolis-btn-buy"
+                                    data-buy-url="<?php echo esc_url($buy_url); ?>">
+                                    Comprar entrades
+                                </a>
+                            <?php endif; ?>
                         </td>
                     </tr>
                 <?php endforeach; ?>
@@ -152,15 +154,6 @@ function entrapolis_shortcode_events_list($atts)
         <?php endif; ?>
     </div>
 
-    <!-- Modal de compra -->
-    <div id="entrapolis-buy-modal" class="entrapolis-buy-modal" style="display: none;">
-        <div class="entrapolis-modal-overlay"></div>
-        <div class="entrapolis-modal-content">
-            <button class="entrapolis-modal-close">&times;</button>
-            <iframe id="entrapolis-buy-iframe" src="" frameborder="0"></iframe>
-        </div>
-    </div>
-
     <script>
         (function () {
             const container = document.getElementById('<?php echo $unique_id; ?>');
@@ -170,11 +163,19 @@ function entrapolis_shortcode_events_list($atts)
             const loadingSpan = container.querySelector('.entrapolis-loading');
             const tbody = container.querySelector('.entrapolis-events-tbody');
 
-            // Modal de compra
-            const modal = document.getElementById('entrapolis-buy-modal');
-            const modalOverlay = modal.querySelector('.entrapolis-modal-overlay');
-            const modalClose = modal.querySelector('.entrapolis-modal-close');
-            const modalIframe = document.getElementById('entrapolis-buy-iframe');
+            // Crear overlay y añadirlo al body
+            let overlay = document.getElementById('entrapolis-purchase-overlay-list');
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.id = 'entrapolis-purchase-overlay-list';
+                overlay.className = 'entrapolis-purchase-overlay';
+                overlay.style.display = 'none';
+                overlay.innerHTML = '<button class="entrapolis-overlay-close">&times;</button>';
+                document.body.appendChild(overlay);
+            }
+
+            const closeBtn = overlay.querySelector('.entrapolis-overlay-close');
+            let purchaseWindow = null;
 
             // Click en fila para ir al detalle
             tbody.addEventListener('click', function (e) {
@@ -184,28 +185,46 @@ function entrapolis_shortcode_events_list($atts)
                 }
             });
 
-            // Click en botón de compra para abrir modal
+            // Click en botón de compra para abrir ventana popup
             tbody.addEventListener('click', function (e) {
-                if (e.target.classList.contains('entrapolis-btn-buy')) {
-                    const eventId = e.target.dataset.event;
-                    if (eventId) {
-                        const buyUrl = 'https://www.entrapolis.com/widgets/buy.php?event_id=' + eventId;
-                        modalIframe.src = buyUrl;
-                        modal.style.display = 'block';
-                        document.body.style.overflow = 'hidden';
+                const buyBtn = e.target.closest('.entrapolis-btn-buy');
+                if (buyBtn) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    const url = buyBtn.dataset.buyUrl;
+                    console.log('Buy URL:', url);
+
+                    if (url) {
+                        const w = 900, h = 700;
+                        const l = (screen.width - w) / 2;
+                        const t = (screen.height - h) / 2;
+
+                        purchaseWindow = window.open(url, 'CompraEntrades', 'width=' + w + ',height=' + h + ',left=' + l + ',top=' + t + ',resizable=yes,scrollbars=yes');
+
+                        if (purchaseWindow) {
+                            overlay.style.display = 'block';
+                            document.body.style.overflow = 'hidden';
+
+                            // Verificar si la ventana se cierra
+                            const checkWindow = setInterval(function () {
+                                if (purchaseWindow.closed) {
+                                    clearInterval(checkWindow);
+                                    overlay.style.display = 'none';
+                                    document.body.style.overflow = '';
+                                }
+                            }, 500);
+                        }
                     }
                 }
-            });
-
-            // Cerrar modal
-            function closeModal() {
-                modal.style.display = 'none';
-                modalIframe.src = '';
+            });            // Cerrar overlay y ventana
+            closeBtn.addEventListener('click', function () {
+                if (purchaseWindow && !purchaseWindow.closed) {
+                    purchaseWindow.close();
+                }
+                overlay.style.display = 'none';
                 document.body.style.overflow = '';
-            }
-
-            modalClose.addEventListener('click', closeModal);
-            modalOverlay.addEventListener('click', closeModal);
+            });
 
             if (!loadMoreBtn) return;
 
