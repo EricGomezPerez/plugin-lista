@@ -13,3 +13,4 @@ require_once ENTRAPOLIS_PLUGIN_DIR . 'includes/shortcodes/shortcode_events_list.
 require_once ENTRAPOLIS_PLUGIN_DIR . 'includes/shortcodes/shortcode_events_grid.php';
 require_once ENTRAPOLIS_PLUGIN_DIR . 'includes/shortcodes/shortcode_events_detail.php';
 require_once ENTRAPOLIS_PLUGIN_DIR . 'includes/shortcodes/shortcode_events_calendar.php';
+require_once ENTRAPOLIS_PLUGIN_DIR . 'includes/shortcodes/shortcode_events_billboard.php';

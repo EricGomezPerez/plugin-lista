@@ -109,8 +109,8 @@ function entrapolis_settings_page()
                         </th>
                         <td>
                             <input type="number" id="entrapolis_org_id" name="entrapolis_org_id"
-                                value="<?php echo esc_attr(get_option('entrapolis_org_id', 2910)); ?>" class="small-text"
-                                min="1" step="1">
+                                value="<?php echo esc_attr(get_option('entrapolis_org_id')); ?>" class="small-text" min="1"
+                                step="1">
                             <p class="description">
                                 El ID de tu organización en Entrapolis (application_id).
                             </p>

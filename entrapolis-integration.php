@@ -74,6 +74,13 @@ function entrapolis_enqueue_styles()
         array('entrapolis-styles'),
         '0.1.3'
     );
+
+    wp_enqueue_style(
+        'entrapolis-styles-billboard',
+        ENTRAPOLIS_PLUGIN_URL . 'assets/css/entrapolis-styles-billboard.css',
+        array('entrapolis-styles'),
+        '0.1.0'
+    );
 }
 add_action('wp_enqueue_scripts', 'entrapolis_enqueue_styles');
 
@@ -185,6 +192,16 @@ function entrapolis_dynamic_styles()
             background: {$darker_hover} !important;
             color: {$text_color} !important;
             border-color: {$darker_hover} !important;
+        }
+        
+        /* Billboard button */
+        .entrapolis-billboard-btn {
+            background: {$accent_color} !important;
+            color: {$text_color} !important;
+        }
+        .entrapolis-billboard-btn:hover {
+            background: {$darker_hover} !important;
+            color: {$text_color} !important;
         }
     ";
 
