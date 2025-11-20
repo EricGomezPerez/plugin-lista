@@ -352,6 +352,8 @@ function entrapolis_ajax_load_more_list()
         $title = esc_html($event['title']);
         $image = !empty($event['image']) ? str_replace('https://www.entrapolis.com/', 'https://cdn.perception.es/v7/_ep/', $event['image']) : '';
 
+        $buy_url = !empty($event['url_widget']) ? $event['url_widget'] : (!empty($event['url']) ? $event['url'] : '');
+
         $detail_url = '';
         if ($detail_page) {
             $detail_url = home_url('/' . $detail_page . '/?entrapolis_event=' . $id);
@@ -374,7 +376,7 @@ function entrapolis_ajax_load_more_list()
             }
         }
         ?>
-        <tr class="entrapolis-event-row">
+        <tr class="entrapolis-event-row" data-detail-url="<?php echo esc_url($detail_url); ?>" style="cursor: pointer;">
             <td class="col-image">
                 <?php if ($image): ?>
                     <img src="<?php echo esc_url($image); ?>" alt="<?php echo esc_attr($title); ?>" class="entrapolis-list-image">
@@ -395,9 +397,9 @@ function entrapolis_ajax_load_more_list()
                 <?php endif; ?>
             </td>
             <td class="col-action">
-                <?php if ($detail_url): ?>
-                    <a href="<?php echo esc_url($detail_url); ?>" class="entrapolis-btn-detail">
-                        Veure detall
+                <?php if ($buy_url): ?>
+                    <a href="javascript:void(0);" class="entrapolis-btn-buy" data-buy-url="<?php echo esc_url($buy_url); ?>">
+                        Comprar entrades
                     </a>
                 <?php endif; ?>
             </td>
