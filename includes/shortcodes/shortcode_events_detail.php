@@ -69,39 +69,67 @@ function entrapolis_shortcode_event_detail($atts)
     $url_widget = !empty($event['url_widget']) ? $event['url_widget'] : '';
     $url = !empty($event['url']) ? $event['url'] : '';
 
+    $months_catalan = entrapolis_get_catalan_months();
+    $category = isset($event['category']) ? esc_html($event['category']) : '';
+    $description = isset($event['description']) && !empty($event['description']) ? esc_html($event['description']) : 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.';
+    $location = isset($event['location']) && !empty($event['location']) ? esc_html($event['location']) : 'Teatre Principal';
+
     ob_start();
     ?>
     <div class="entrapolis-event-detail">
         <div class="entrapolis-event-detail-container">
+            <!-- Imagen grande a la izquierda -->
             <?php if ($image): ?>
-                <div class="entrapolis-event-image">
-                    <img src="<?php echo esc_url($image); ?>" alt="<?php echo esc_attr($title); ?>">
+                <div class="entrapolis-event-image-column">
+                    <img src="<?php echo esc_url($image); ?>" alt="<?php echo esc_attr($title); ?>"
+                        class="entrapolis-event-main-image">
                 </div>
             <?php endif; ?>
 
-            <div class="entrapolis-event-info">
-                <h2 class="entrapolis-event-title"><?php echo $title; ?></h2>
-                <?php if (!empty($related_events)): ?>
-                    <div class="entrapolis-event-dates">
-                        <strong>Dates disponibles:</strong>
-                        <ul class="entrapolis-dates-list">
-                            <?php
-                            $months_catalan = array(
-                                1 => 'gener',
-                                2 => 'febrer',
-                                3 => 'març',
-                                4 => 'abril',
-                                5 => 'maig',
-                                6 => 'juny',
-                                7 => 'juliol',
-                                8 => 'agost',
-                                9 => 'setembre',
-                                10 => 'octubre',
-                                11 => 'novembre',
-                                12 => 'desembre'
-                            );
+            <!-- Información a la derecha -->
+            <div class="entrapolis-event-content-column">
+                <h1 class="entrapolis-event-title"><?php echo $title; ?></h1>
 
-                            foreach ($related_events as $rel_evt):
+                <?php if ($category): ?>
+                    <div class="entrapolis-event-category">
+                        <span class="category-label">Categoria:</span>
+                        <span class="category-value"><?php echo $category; ?></span>
+                    </div>
+                <?php endif; ?>
+
+                <?php if ($description): ?>
+                    <div class="entrapolis-event-description">
+                        <p><?php echo nl2br($description); ?></p>
+                    </div>
+                <?php endif; ?>
+
+                <?php if ($location): ?>
+                    <div class="entrapolis-event-location">
+                        <span class="location-label">Ubicació:</span>
+                        <span class="location-value"><?php echo $location; ?></span>
+                    </div>
+                <?php endif; ?>
+
+                <?php if (!empty($related_events)): ?>
+                    <div class="entrapolis-event-dates-section">
+                        <div class="entrapolis-dates-header">
+                            <h3 class="dates-title">Dates disponibles</h3>
+                            <div class="entrapolis-event-actions">
+                                <?php if ($url_widget): ?>
+                                    <a class="entrapolis-event-buy-link" href="<?php echo esc_url($url_widget); ?>"
+                                        onclick="var w=900,h=700,l=(screen.width-w)/2,t=(screen.height-h)/2; window.open(this.href, 'CompraEntrades', 'width='+w+',height='+h+',left='+l+',top='+t+',resizable=yes,scrollbars=yes'); return false;">
+                                        Comprar entrades
+                                    </a>
+                                <?php elseif ($url): ?>
+                                    <a class="entrapolis-event-buy-link" href="<?php echo esc_url($url); ?>"
+                                        onclick="var w=900,h=700,l=(screen.width-w)/2,t=(screen.height-h)/2; window.open(this.href, 'CompraEntrades', 'width='+w+',height='+h+',left='+l+',top='+t+',resizable=yes,scrollbars=yes'); return false;">
+                                        Comprar entrades
+                                    </a>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        <ul class="entrapolis-dates-list">
+                            <?php foreach ($related_events as $rel_evt):
                                 preg_match('/(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})/', $rel_evt['date_readable'], $matches);
 
                                 if ($matches) {
@@ -117,27 +145,11 @@ function entrapolis_shortcode_event_detail($atts)
                                     $formatted_date = $rel_evt['date_readable'];
                                 }
                                 ?>
-                                <li><?php echo esc_html($formatted_date); ?></li>
+                                <li class="date-item"><?php echo esc_html($formatted_date); ?></li>
                             <?php endforeach; ?>
                         </ul>
                     </div>
                 <?php endif; ?>
-                <!-- <?php if ($location): ?>
-                    <div class="entrapolis-event-location">📍 <?php echo $location; ?></div>
-                <?php endif; ?> -->
-
-                <div class="entrapolis-event-actions">
-                    <?php if ($url_widget): ?>
-                        <a class="entrapolis-event-buy-link" href="<?php echo esc_url($url_widget); ?>" target="_blank"
-                            rel="noopener">
-                            <?php esc_html_e('Comprar entrades', 'entrapolis'); ?>
-                        </a>
-                    <?php elseif ($url): ?>
-                        <a class="entrapolis-event-buy-link" href="<?php echo esc_url($url); ?>" target="_blank" rel="noopener">
-                            <?php esc_html_e('Comprar entrades', 'entrapolis'); ?>
-                        </a>
-                    <?php endif; ?>
-                </div>
             </div>
         </div>
     </div>

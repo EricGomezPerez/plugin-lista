@@ -1,113 +1,182 @@
-
+/* Event Detail Page */
 .entrapolis-event-detail {
-    max-width: 1000px;
+    max-width: 1200px;
     margin: 40px auto;
-    padding: 30px;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    padding: 0;
+    background: transparent;
     display: block !important;
 }
 
 .entrapolis-event-detail-container {
     display: flex;
-    gap: 30px;
+    gap: 40px;
     align-items: flex-start;
+    background: transparent;
+    overflow: hidden;
 }
 
-.entrapolis-event-detail .entrapolis-event-image {
-    flex: 0 0 350px;
+/* Columna izquierda - Imagen */
+.entrapolis-event-image-column {
+    flex: 0 0 45%;
+    max-width: 600px;
     margin: 0 !important;
 }
 
-.entrapolis-event-detail .entrapolis-event-image img {
-    /* width: 100% !important; */
-    height: 300px !important;
-    max-height: 350px !important;
+.entrapolis-event-main-image {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 500px;
     object-fit: cover !important;
-    border-radius: 8px;
     display: block !important;
 }
 
-.entrapolis-event-info {
+/* Columna derecha - Contenido */
+.entrapolis-event-content-column {
     flex: 1;
+    padding: 40px 40px 40px 0;
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 25px;
 }
 
 .entrapolis-event-detail .entrapolis-event-title {
     font-size: 2.5rem;
     font-weight: 700;
     margin: 0 !important;
-    color: #333;
+    color: #1a1a1a;
     line-height: 1.2;
 }
 
-.entrapolis-event-detail .entrapolis-event-date,
-.entrapolis-event-detail .entrapolis-event-location {
-    font-size: 1.1rem;
-    color: #666;
-    margin: 0 !important;
+/* Categoría */
+.entrapolis-event-category {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 2px solid #f0f0f0;
 }
 
-.entrapolis-event-dates {
-    margin: 15px 0;
+.entrapolis-event-category .category-label {
+    font-weight: 600;
+    color: #666;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.entrapolis-event-dates strong {
+.entrapolis-event-category .category-value {
     font-size: 1.1rem;
     color: #333;
-    display: block;
-    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+/* Ubicación */
+.entrapolis-event-location {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.entrapolis-event-location .location-label {
+    font-weight: 600;
+    color: #666;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.entrapolis-event-location .location-value {
+    font-size: 1.1rem;
+    color: #333;
+    font-weight: 500;
+}
+
+/* Descripción */
+.entrapolis-event-description {
+    margin: 0;
+}
+
+.entrapolis-event-description p {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: #555;
+    margin: 0;
+}
+
+/* Sección de fechas */
+.entrapolis-event-dates-section {
+    margin: 10px 0;
+}
+
+.entrapolis-dates-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.entrapolis-event-dates-section .dates-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0 !important;
 }
 
 .entrapolis-dates-list {
     list-style: none;
     padding: 0;
     margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
 
-.entrapolis-dates-list li {
-    padding: 8px 12px;
-    background: #f5f5f5;
-    border-radius: 4px;
-    margin-bottom: 5px;
-    font-size: 0.95rem;
-    color: #666;
+.entrapolis-dates-list .date-item {
+    font-size: 1rem;
+    color: #444;
+    padding: 4px 0;
 }
 
+/* Botón de compra */
 .entrapolis-event-detail .entrapolis-event-actions {
-    margin: 20px 0 0 !important;
+    margin: 0 !important;
+    padding: 0;
 }
 
 .entrapolis-event-buy-link {
-    display: inline-block;
-    padding: 12px 24px;
-    background: #acf3a3;
-    color: #000000;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 32px;
+    background: #22c55e;
+    color: #ffffff;
     text-decoration: none;
-    border-radius: 4px;
-    font-size: 1rem;
-    transition: background 0.3s ease;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
 }
 
 .entrapolis-event-buy-link:hover {
-    background: #6cbe61;
-    color: #000000;
+    background: #16a34a;
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
 }
 
 .entrapolis-buy-widget {
-    max-width: 800px;
+    width: 90%;
+    max-width: 100%;
     margin: 40px auto;
 }
 
 .entrapolis-buy-widget iframe {
-    width: 100%;
-    min-height: 600px;
+    width: 100% !important;
+    height: 1000px !important;
+    min-height: 1000px !important;
     border: 0;
 }
 
@@ -127,22 +196,55 @@
     border-radius: 4px;
 }
 
+/* Responsive */
 @media (max-width: 768px) {
-    .entrapolis-events-list {
-        grid-template-columns: 1fr;
+    .entrapolis-event-detail {
+        margin: 20px 15px;
     }
     
     .entrapolis-event-detail-container {
         flex-direction: column;
+        gap: 0;
     }
     
-    .entrapolis-event-detail .entrapolis-event-image {
+    .entrapolis-event-image-column {
         flex: 0 0 auto;
         width: 100%;
+        max-width: 100%;
+    }
+    
+    .entrapolis-event-main-image {
+        min-height: 300px !important;
+        border-radius: 0;
+    }
+    
+    .entrapolis-event-content-column {
+        padding: 30px 20px;
+        gap: 20px;
     }
     
     .entrapolis-event-detail .entrapolis-event-title {
         font-size: 1.8rem;
+    }
+    
+    .entrapolis-dates-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .entrapolis-event-dates-section .dates-title {
+        font-size: 1.1rem;
+    }
+    
+    .entrapolis-dates-list .date-item {
+        font-size: 0.9rem;
+    }
+    
+    .entrapolis-event-buy-link {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
     }
 }
 

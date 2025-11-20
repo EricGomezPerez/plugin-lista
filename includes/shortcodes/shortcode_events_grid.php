@@ -60,9 +60,14 @@ function entrapolis_shortcode_events($atts)
         $grouped_events[$key]['ids'][] = $event['id'];
     }
 
+    // Guardar total antes de limitar
+    $total_events = count($grouped_events);
+    $has_more = false;
+
     // Limitar eventos si se especifica
-    if ($limit > 0) {
+    if ($limit > 0 && $total_events > $limit) {
         $grouped_events = array_slice($grouped_events, 0, $limit);
+        $has_more = true;
     }
 
     // Mapeo de categorías a colores
@@ -90,11 +95,15 @@ function entrapolis_shortcode_events($atts)
         12 => 'desembre'
     );
 
+    $unique_id = 'entrapolis-grid-' . uniqid();
+
     ob_start();
     ?>
-    <div class="entrapolis-events-wrapper">
+    <div class="entrapolis-events-wrapper" id="<?php echo $unique_id; ?>" data-org="<?php echo $org_id; ?>"
+        data-detail-page="<?php echo esc_attr($detail_page_slug); ?>" data-limit="<?php echo $limit; ?>"
+        data-offset="<?php echo $limit; ?>">
         <div class="entrapolis-events-container">
-            <div class="entrapolis-events-grid">
+            <div class="entrapolis-events-grid entrapolis-events-grid-content">
                 <?php foreach ($grouped_events as $event):
                     $id = intval($event['ids'][0]);
                     $title = esc_html($event['title']);
@@ -149,8 +158,76 @@ function entrapolis_shortcode_events($atts)
                     </div>
                 <?php endforeach; ?>
             </div>
+            <?php if ($has_more): ?>
+                <div class="entrapolis-load-more-wrapper">
+                    <button class="entrapolis-load-more-btn" data-target="<?php echo $unique_id; ?>">
+                        Carregar més esdeveniments
+                    </button>
+                    <span class="entrapolis-loading" style="display:none;">Carregant...</span>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
+
+    <script>
+        (function () {
+            const container = document.getElementById('<?php echo $unique_id; ?>');
+            if (!container) return;
+
+            const loadMoreBtn = container.querySelector('.entrapolis-load-more-btn');
+            const loadingSpan = container.querySelector('.entrapolis-loading');
+            const grid = container.querySelector('.entrapolis-events-grid-content');
+
+            if (!loadMoreBtn) return;
+
+            loadMoreBtn.addEventListener('click', function () {
+                const orgId = container.dataset.org;
+                const detailPage = container.dataset.detailPage;
+                const limit = parseInt(container.dataset.limit);
+                const offset = parseInt(container.dataset.offset);
+
+                loadMoreBtn.style.display = 'none';
+                loadingSpan.style.display = 'inline';
+
+                fetch('<?php echo admin_url('admin-ajax.php'); ?>', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        action: 'entrapolis_load_more_grid',
+                        org_id: orgId,
+                        detail_page: detailPage,
+                        limit: limit,
+                        offset: offset
+                    })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Response:', data);
+                        if (data.success && data.data && data.data.html) {
+                            grid.insertAdjacentHTML('beforeend', data.data.html);
+                            container.dataset.offset = offset + limit;
+
+                            if (!data.data.has_more) {
+                                loadMoreBtn.parentElement.remove();
+                            } else {
+                                loadMoreBtn.style.display = 'inline-block';
+                                loadingSpan.style.display = 'none';
+                            }
+                        } else {
+                            console.error('Invalid response:', data);
+                            loadMoreBtn.parentElement.remove();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        loadMoreBtn.style.display = 'inline-block';
+                        loadingSpan.style.display = 'none';
+                    });
+            });
+        })();
+    </script>
     <?php
     return ob_get_clean();
 }

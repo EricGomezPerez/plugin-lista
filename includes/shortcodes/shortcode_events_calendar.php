@@ -51,6 +51,9 @@ function entrapolis_shortcode_calendar($atts)
     // Generar meses
     $months_data = array();
     $current_date = new DateTime();
+    $days_catalan = entrapolis_get_catalan_days();
+    $days_header = array('Dl', 'Dt', 'Dc', 'Dj', 'Dv', 'Ds', 'Dg');
+    $today = date('Y-m-d');
 
     for ($i = 0; $i < $months_ahead; $i++) {
         $month_date = clone $current_date;
@@ -59,21 +62,19 @@ function entrapolis_shortcode_calendar($atts)
         $month_key = $month_date->format('Y-m');
         $month_name = strftime('%B %Y', $month_date->getTimestamp());
 
-        // Días del mes
+        // Primer y último día del mes
         $first_day = new DateTime($month_date->format('Y-m-01'));
         $last_day = new DateTime($month_date->format('Y-m-t'));
 
-        $days = array();
+        // Vista horizontal (desktop) - todos los días en fila
+        $days_horizontal = array();
         $interval = new DateInterval('P1D');
         $period = new DatePeriod($first_day, $interval, $last_day->modify('+1 day'));
-
-        $days_catalan = array('Dg', 'Dl', 'Dt', 'Dc', 'Dj', 'Dv', 'Ds');
-        $today = date('Y-m-d');
 
         foreach ($period as $date) {
             $date_str = $date->format('Y-m-d');
             $day_of_week = $date->format('w'); // 0 (domingo) a 6 (sábado)
-            $days[] = array(
+            $days_horizontal[] = array(
                 'date' => $date_str,
                 'day_num' => $date->format('j'),
                 'day_name' => $days_catalan[$day_of_week],
@@ -83,12 +84,69 @@ function entrapolis_shortcode_calendar($atts)
             );
         }
 
+        // Vista grid (móvil) - semanas
+        $first_day = new DateTime($month_date->format('Y-m-01'));
+        $last_day = new DateTime($month_date->format('Y-m-t'));
+        $first_day_of_week = $first_day->format('N');
+
+        $weeks = array();
+        $current_week = array();
+
+        // Rellenar días vacíos antes del primer día del mes
+        for ($j = 1; $j < $first_day_of_week; $j++) {
+            $current_week[] = array(
+                'date' => '',
+                'day_num' => '',
+                'is_empty' => true,
+                'has_events' => false,
+                'events' => array(),
+                'is_today' => false,
+            );
+        }
+
+        // Llenar los días del mes
+        $interval = new DateInterval('P1D');
+        $period = new DatePeriod($first_day, $interval, $last_day->modify('+1 day'));
+
+        foreach ($period as $date) {
+            $date_str = $date->format('Y-m-d');
+            $day_of_week_num = $date->format('N');
+
+            $current_week[] = array(
+                'date' => $date_str,
+                'day_num' => $date->format('j'),
+                'is_empty' => false,
+                'has_events' => isset($events_by_date[$date_str]),
+                'events' => isset($events_by_date[$date_str]) ? $events_by_date[$date_str] : array(),
+                'is_today' => $date_str === $today,
+            );
+
+            if ($day_of_week_num == 7 || $date == $last_day) {
+                while (count($current_week) < 7) {
+                    $current_week[] = array(
+                        'date' => '',
+                        'day_num' => '',
+                        'is_empty' => true,
+                        'has_events' => false,
+                        'events' => array(),
+                        'is_today' => false,
+                    );
+                }
+                $weeks[] = $current_week;
+                $current_week = array();
+            }
+        }
+
         $months_data[] = array(
             'key' => $month_key,
             'name' => ucfirst($month_name),
-            'days' => $days,
+            'days' => $days_horizontal,
+            'weeks' => $weeks,
+            'days_header' => $days_header,
         );
     }
+
+    $months_catalan = entrapolis_get_catalan_months();
 
     ob_start();
     ?>
@@ -97,71 +155,131 @@ function entrapolis_shortcode_calendar($atts)
             <?php foreach ($months_data as $index => $month): ?>
                 <div class="entrapolis-calendar-month" data-month-index="<?php echo $index; ?>"
                     style="display: <?php echo $index === 0 ? 'flex' : 'none'; ?>;">
+
+                    <!-- Header con navegación -->
                     <div class="entrapolis-calendar-header">
                         <button class="entrapolis-calendar-prev" aria-label="Mes anterior">‹</button>
                         <div class="entrapolis-calendar-month-name"><?php echo esc_html($month['name']); ?></div>
                         <button class="entrapolis-calendar-next" aria-label="Mes següent">›</button>
                     </div>
-                    <?php foreach ($month['days'] as $day):
-                        $classes = array('entrapolis-calendar-day');
-                        if ($day['has_events'])
-                            $classes[] = 'has-events';
-                        if ($day['is_today'])
-                            $classes[] = 'is-today';
-                        ?>
-                        <div class="<?php echo implode(' ', $classes); ?>" data-date="<?php echo esc_attr($day['date']); ?>">
-                            <div class="entrapolis-calendar-day-name"><?php echo esc_html($day['day_name']); ?></div>
-                            <div class="entrapolis-calendar-day-number"><?php echo esc_html($day['day_num']); ?></div>
 
-                            <?php if ($day['has_events']): ?>
-                                <div class="entrapolis-calendar-tooltip">
-                                    <?php
-                                    $months_catalan = array(
-                                        1 => 'gener',
-                                        2 => 'febrer',
-                                        3 => 'març',
-                                        4 => 'abril',
-                                        5 => 'maig',
-                                        6 => 'juny',
-                                        7 => 'juliol',
-                                        8 => 'agost',
-                                        9 => 'setembre',
-                                        10 => 'octubre',
-                                        11 => 'novembre',
-                                        12 => 'desembre'
-                                    );
+                    <!-- Contenedor para vistas -->
+                    <div class="entrapolis-calendar-views">
+                        <!-- Vista horizontal para desktop -->
+                        <div class="entrapolis-calendar-horizontal">
+                            <?php foreach ($month['days'] as $day):
+                                $classes = array('entrapolis-calendar-day');
+                                if ($day['has_events'])
+                                    $classes[] = 'has-events';
+                                if ($day['is_today'])
+                                    $classes[] = 'is-today';
+                                ?>
+                                <div class="<?php echo implode(' ', $classes); ?>"
+                                    data-date="<?php echo esc_attr($day['date']); ?>">
+                                    <div class="entrapolis-calendar-day-name"><?php echo esc_html($day['day_name']); ?></div>
+                                    <div class="entrapolis-calendar-day-number"><?php echo esc_html($day['day_num']); ?></div>
 
-                                    foreach ($day['events'] as $event):
-                                        $event_detail_url = '';
-                                        if (!empty($atts['detail_page'])) {
-                                            $event_detail_url = home_url('/' . sanitize_text_field($atts['detail_page']) . '/?entrapolis_event=' . intval($event['id']));
-                                        }
+                                    <?php if ($day['has_events']): ?>
+                                        <div class="entrapolis-calendar-tooltip">
+                                            <?php foreach ($day['events'] as $event):
+                                                $event_detail_url = '';
+                                                if (!empty($atts['detail_page'])) {
+                                                    $event_detail_url = home_url('/' . sanitize_text_field($atts['detail_page']) . '/?entrapolis_event=' . intval($event['id']));
+                                                }
 
-                                        preg_match('/(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})/', $event['date_readable'], $matches);
-                                        if ($matches) {
-                                            $hour = $matches[4];
-                                            $minute = $matches[5];
-                                            $formatted_date = "$hour:$minute";
-                                        } else {
-                                            $formatted_date = $event['date_readable'];
-                                        }
-                                        ?>
-                                        <a href="<?php echo esc_url($event_detail_url); ?>" class="entrapolis-calendar-tooltip-event">
-                                            <?php if (!empty($event['image'])):
-                                                $image = str_replace('https://www.entrapolis.com/', 'https://cdn.perception.es/v7/_ep/', $event['image']);
+                                                preg_match('/(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})/', $event['date_readable'], $matches);
+                                                if ($matches) {
+                                                    $hour = $matches[4];
+                                                    $minute = $matches[5];
+                                                    $formatted_date = "$hour:$minute";
+                                                } else {
+                                                    $formatted_date = $event['date_readable'];
+                                                }
                                                 ?>
-                                                <img src="<?php echo esc_url($image); ?>" alt="<?php echo esc_attr($event['title']); ?>">
+                                                <a href="<?php echo esc_url($event_detail_url); ?>"
+                                                    class="entrapolis-calendar-tooltip-event">
+                                                    <?php if (!empty($event['image'])):
+                                                        $image = str_replace('https://www.entrapolis.com/', 'https://cdn.perception.es/v7/_ep/', $event['image']);
+                                                        ?>
+                                                        <img src="<?php echo esc_url($image); ?>"
+                                                            alt="<?php echo esc_attr($event['title']); ?>">
+                                                    <?php endif; ?>
+                                                    <div class="entrapolis-calendar-tooltip-content">
+                                                        <strong><?php echo esc_html($event['title']); ?></strong>
+                                                        <span><?php echo esc_html($formatted_date); ?></span>
+                                                    </div>
+                                                </a>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+
+                        <!-- Vista grid para móvil -->
+                        <div class="entrapolis-calendar-grid">
+                            <div class="entrapolis-calendar-weekdays">
+                                <?php foreach ($month['days_header'] as $day_name): ?>
+                                    <div class="entrapolis-calendar-weekday"><?php echo esc_html($day_name); ?></div>
+                                <?php endforeach; ?>
+                            </div>
+
+                            <?php foreach ($month['weeks'] as $week): ?>
+                                <div class="entrapolis-calendar-week">
+                                    <?php foreach ($week as $day):
+                                        $classes = array('entrapolis-calendar-day');
+                                        if ($day['is_empty'])
+                                            $classes[] = 'is-empty';
+                                        if ($day['has_events'])
+                                            $classes[] = 'has-events';
+                                        if ($day['is_today'])
+                                            $classes[] = 'is-today';
+                                        ?>
+                                        <div class="<?php echo implode(' ', $classes); ?>"
+                                            data-date="<?php echo esc_attr($day['date']); ?>">
+                                            <?php if (!$day['is_empty']): ?>
+                                                <div class="entrapolis-calendar-day-number"><?php echo esc_html($day['day_num']); ?></div>
+
+                                                <?php if ($day['has_events']): ?>
+                                                    <div class="entrapolis-calendar-tooltip">
+                                                        <?php foreach ($day['events'] as $event):
+                                                            $event_detail_url = '';
+                                                            if (!empty($atts['detail_page'])) {
+                                                                $event_detail_url = home_url('/' . sanitize_text_field($atts['detail_page']) . '/?entrapolis_event=' . intval($event['id']));
+                                                            }
+
+                                                            preg_match('/(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})/', $event['date_readable'], $matches);
+                                                            if ($matches) {
+                                                                $hour = $matches[4];
+                                                                $minute = $matches[5];
+                                                                $formatted_date = "$hour:$minute";
+                                                            } else {
+                                                                $formatted_date = $event['date_readable'];
+                                                            }
+                                                            ?>
+                                                            <a href="<?php echo esc_url($event_detail_url); ?>"
+                                                                class="entrapolis-calendar-tooltip-event">
+                                                                <?php if (!empty($event['image'])):
+                                                                    $image = str_replace('https://www.entrapolis.com/', 'https://cdn.perception.es/v7/_ep/', $event['image']);
+                                                                    ?>
+                                                                    <img src="<?php echo esc_url($image); ?>"
+                                                                        alt="<?php echo esc_attr($event['title']); ?>">
+                                                                <?php endif; ?>
+                                                                <div class="entrapolis-calendar-tooltip-content">
+                                                                    <strong><?php echo esc_html($event['title']); ?></strong>
+                                                                    <span><?php echo esc_html($formatted_date); ?></span>
+                                                                </div>
+                                                            </a>
+                                                        <?php endforeach; ?>
+                                                    </div>
+                                                <?php endif; ?>
                                             <?php endif; ?>
-                                            <div class="entrapolis-calendar-tooltip-content">
-                                                <strong><?php echo esc_html($event['title']); ?></strong>
-                                                <span><?php echo esc_html($formatted_date); ?></span>
-                                            </div>
-                                        </a>
+                                        </div>
                                     <?php endforeach; ?>
                                 </div>
-                            <?php endif; ?>
+                            <?php endforeach; ?>
                         </div>
-                    <?php endforeach; ?>
+                    </div>
                 </div>
             <?php endforeach; ?>
         </div>
@@ -183,9 +301,7 @@ function entrapolis_shortcode_calendar($atts)
             function updateCalendar() {
                 months.forEach((month, index) => {
                     month.style.display = index === currentMonth ? 'flex' : 'none';
-                });
-
-                const prevBtns = calendar.querySelectorAll('.entrapolis-calendar-prev');
+                }); const prevBtns = calendar.querySelectorAll('.entrapolis-calendar-prev');
                 const nextBtns = calendar.querySelectorAll('.entrapolis-calendar-next');
 
                 prevBtns.forEach(btn => btn.disabled = currentMonth === 0);

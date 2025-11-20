@@ -42,6 +42,18 @@ function entrapolis_register_settings()
         'sanitize_callback' => 'absint',
         'default' => 2910
     ));
+
+    register_setting('entrapolis_settings_group', 'entrapolis_accent_color', array(
+        'type' => 'string',
+        'sanitize_callback' => 'sanitize_hex_color',
+        'default' => '#22c55e'
+    ));
+
+    register_setting('entrapolis_settings_group', 'entrapolis_text_color', array(
+        'type' => 'string',
+        'sanitize_callback' => 'sanitize_hex_color',
+        'default' => '#ffffff'
+    ));
 }
 add_action('admin_init', 'entrapolis_register_settings');
 
@@ -104,6 +116,33 @@ function entrapolis_settings_page()
                             </p>
                         </td>
                     </tr>
+
+                    <tr>
+                        <th scope="row">
+                            <label for="entrapolis_accent_color">Color de Acento</label>
+                        </th>
+                        <td>
+                            <input type="color" id="entrapolis_accent_color" name="entrapolis_accent_color"
+                                value="<?php echo esc_attr(get_option('entrapolis_accent_color', '#22c55e')); ?>">
+                            <p class="description">
+                                Color para resaltar eventos en el calendario y botones (por defecto: verde #22c55e).
+                            </p>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th scope="row">
+                            <label for="entrapolis_text_color">Color de Texto</label>
+                        </th>
+                        <td>
+                            <input type="color" id="entrapolis_text_color" name="entrapolis_text_color"
+                                value="<?php echo esc_attr(get_option('entrapolis_text_color', '#ffffff')); ?>">
+                            <p class="description">
+                                Color del texto sobre el color de acento. Usa blanco (#ffffff) para colores oscuros o negro
+                                (#000000) para colores claros.
+                            </p>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
 
@@ -124,7 +163,7 @@ function entrapolis_settings_page()
         <div class="entrapolis-admin-info">
             <h2>Uso de Shortcodes</h2>
 
-            <h3>Listado de eventos</h3>
+            <h3>Listado de eventos (Grid)</h3>
             <code>[entrapolis_events limit="4" detail_page="detalle"]</code>
             <p>Muestra un grid con los próximos eventos. Parámetros opcionales:</p>
             <ul>
@@ -133,13 +172,27 @@ function entrapolis_settings_page()
                 <li><code>detail_page</code>: Slug de la página de detalle</li>
             </ul>
 
+            <h3>Listado de eventos (Tabla)</h3>
+            <code>[entrapolis_events_list limit="10" detail_page="detalle"]</code>
+            <p>Muestra una tabla con los eventos ordenados en columnas: imagen, título, fechas y botón de detalle.
+                Parámetros opcionales:</p>
+            <ul>
+                <li><code>org</code>: ID de organización (por defecto usa el configurado arriba)</li>
+                <li><code>limit</code>: Número máximo de eventos a mostrar (por defecto 10)</li>
+                <li><code>detail_page</code>: Slug de la página de detalle</li>
+            </ul>
+            <p><strong>Características:</strong></p>
+            <ul>
+                <li>Muestra imagen miniatura (150x105px)</li>
+                <li>Si un evento tiene múltiples fechas, las muestra todas en lista</li>
+                <li>Si solo tiene una fecha, la muestra formateada en línea</li>
+                <li>Botón "Veure detall" que enlaza a la página de detalle</li>
+                <li>Responsive con scroll horizontal en móviles</li>
+            </ul>
+
             <h3>Detalle de evento</h3>
             <code>[entrapolis_event id="123"]</code>
             <p>Muestra el detalle de un evento específico.</p>
-
-            <h3>Widget de compra</h3>
-            <code>[entrapolis_buy id="123"]</code>
-            <p>Muestra el widget de compra de entradas para un evento.</p>
 
             <h3>Calendario</h3>
             <code>[entrapolis_calendar detail_page="detalle"]</code>

@@ -67,5 +67,127 @@ function entrapolis_enqueue_styles()
         array('entrapolis-styles'),
         '0.1.1'
     );
+
+    wp_enqueue_style(
+        'entrapolis-styles-list',
+        ENTRAPOLIS_PLUGIN_URL . 'assets/css/entrapolis-styles-list.css',
+        array('entrapolis-styles'),
+        '0.1.3'
+    );
 }
 add_action('wp_enqueue_scripts', 'entrapolis_enqueue_styles');
+
+/**
+ * Add dynamic CSS for accent color
+ */
+function entrapolis_dynamic_styles()
+{
+    $accent_color = entrapolis_get_accent_color();
+    $text_color = entrapolis_get_text_color();
+
+    // Calculate darker shades for hover states
+    $rgb = sscanf($accent_color, "#%02x%02x%02x");
+    $darker_hover = sprintf(
+        "#%02x%02x%02x",
+        max(0, $rgb[0] - 30),
+        max(0, $rgb[1] - 30),
+        max(0, $rgb[2] - 30)
+    );
+    $darkest_hover = sprintf(
+        "#%02x%02x%02x",
+        max(0, $rgb[0] - 50),
+        max(0, $rgb[1] - 50),
+        max(0, $rgb[2] - 50)
+    );
+
+    $custom_css = "
+        /* Calendar horizontal events */
+        .entrapolis-calendar-horizontal .entrapolis-calendar-day.has-events {
+            background: {$accent_color} !important;
+        }
+        .entrapolis-calendar-horizontal .entrapolis-calendar-day.has-events .entrapolis-calendar-day-name,
+        .entrapolis-calendar-horizontal .entrapolis-calendar-day.has-events .entrapolis-calendar-day-number {
+            color: {$text_color} !important;
+        }
+        .entrapolis-calendar-horizontal .entrapolis-calendar-day.has-events.is-today {
+            background: {$darker_hover} !important;
+        }
+        .entrapolis-calendar-horizontal .entrapolis-calendar-day.has-events:hover,
+        .entrapolis-calendar-horizontal .entrapolis-calendar-day.has-events.is-today:hover {
+            background: {$darkest_hover} !important;
+        }
+        
+        /* Calendar grid events */
+        .entrapolis-calendar-grid .entrapolis-calendar-day.has-events {
+            background: {$accent_color} !important;
+        }
+        .entrapolis-calendar-grid .entrapolis-calendar-day.has-events .entrapolis-calendar-day-number {
+            color: {$text_color} !important;
+        }
+        .entrapolis-calendar-grid .entrapolis-calendar-day.has-events.is-today {
+            background: {$darker_hover} !important;
+        }
+        .entrapolis-calendar-grid .entrapolis-calendar-day.has-events:hover {
+            background: {$darkest_hover} !important;
+        }
+        
+        /* Load more button */
+        .entrapolis-load-more-btn {
+            background: {$accent_color} !important;
+            color: {$text_color} !important;
+        }
+        .entrapolis-load-more-btn:hover {
+            background: {$darker_hover} !important;
+            color: {$text_color} !important;
+        }
+        
+        /* Primary button */
+        .entrapolis-btn-primary {
+            background: {$accent_color} !important;
+            color: {$text_color} !important;
+        }
+        .entrapolis-btn-primary:hover {
+            background: {$darker_hover} !important;
+            color: {$text_color} !important;
+        }
+        
+        /* Detail button */
+        .entrapolis-btn-detail {
+            background: {$accent_color} !important;
+            color: {$text_color} !important;
+            border-color: {$accent_color} !important;
+        }
+        .entrapolis-btn-detail:hover {
+            background: {$darker_hover} !important;
+            color: {$text_color} !important;
+            border-color: {$darker_hover} !important;
+        }
+        
+        /* Buy tickets button in detail page */
+        .entrapolis-event-buy-link {
+            background: {$accent_color} !important;
+            color: {$text_color} !important;
+            border-color: {$accent_color} !important;
+        }
+        .entrapolis-event-buy-link:hover {
+            background: {$darker_hover} !important;
+            color: {$text_color} !important;
+            border-color: {$darker_hover} !important;
+        }
+        
+        /* Buy button in list view */
+        .entrapolis-btn-buy {
+            background: {$accent_color} !important;
+            color: {$text_color} !important;
+            border-color: {$accent_color} !important;
+        }
+        .entrapolis-btn-buy:hover {
+            background: {$darker_hover} !important;
+            color: {$text_color} !important;
+            border-color: {$darker_hover} !important;
+        }
+    ";
+
+    wp_add_inline_style('entrapolis-styles', $custom_css);
+}
+add_action('wp_enqueue_scripts', 'entrapolis_dynamic_styles', 20);
