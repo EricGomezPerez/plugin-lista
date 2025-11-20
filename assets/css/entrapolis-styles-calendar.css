@@ -212,11 +212,11 @@
 }
 
 .entrapolis-calendar-grid .entrapolis-calendar-day.is-today {
-    background: #fff9e6;
+    background: #c9c9c9;
 }
 
 .entrapolis-calendar-grid .entrapolis-calendar-day.is-today .entrapolis-calendar-day-number {
-    background: #ffd700;
+    background: #8f8f8f;
     color: #000;
     border-radius: 50%;
     width: 28px;
@@ -242,7 +242,7 @@
 }
 
 .entrapolis-calendar-grid .entrapolis-calendar-day.has-events.is-today .entrapolis-calendar-day-number {
-    background: #ffd700;
+    background: #8f8f8f;
     color: #000;
 }
 

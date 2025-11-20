@@ -52,7 +52,7 @@ function entrapolis_shortcode_calendar($atts)
     $months_data = array();
     $current_date = new DateTime();
     $days_catalan = entrapolis_get_catalan_days();
-    $days_header = array('Dl', 'Dt', 'Dc', 'Dj', 'Dv', 'Ds', 'Dg');
+    $days_header = array('Dl', 'Dm', 'Dc', 'Dj', 'Dv', 'Ds', 'Dg');
     $today = date('Y-m-d');
 
     for ($i = 0; $i < $months_ahead; $i++) {
