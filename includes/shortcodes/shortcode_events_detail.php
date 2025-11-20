@@ -153,6 +153,60 @@ function entrapolis_shortcode_event_detail($atts)
             </div>
         </div>
     </div>
+
+    <script>
+        (function () {
+            // Crear overlay y añadirlo al body
+            let overlay = document.getElementById('entrapolis-purchase-overlay');
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.id = 'entrapolis-purchase-overlay';
+                overlay.className = 'entrapolis-purchase-overlay';
+                overlay.style.display = 'none';
+                overlay.innerHTML = '<button class="entrapolis-overlay-close">&times;</button>';
+                document.body.appendChild(overlay);
+            }
+
+            const closeBtn = overlay.querySelector('.entrapolis-overlay-close');
+            let purchaseWindow = null;
+
+            // Interceptar clicks en botones de compra
+            document.querySelectorAll('.entrapolis-event-buy-link').forEach(function (btn) {
+                btn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const url = this.href;
+                    const w = 900, h = 700;
+                    const l = (screen.width - w) / 2;
+                    const t = (screen.height - h) / 2;
+
+                    purchaseWindow = window.open(url, 'CompraEntrades', 'width=' + w + ',height=' + h + ',left=' + l + ',top=' + t + ',resizable=yes,scrollbars=yes');
+
+                    if (purchaseWindow) {
+                        overlay.style.display = 'block';
+                        document.body.style.overflow = 'hidden';
+
+                        // Verificar si la ventana se cierra
+                        const checkWindow = setInterval(function () {
+                            if (purchaseWindow.closed) {
+                                clearInterval(checkWindow);
+                                overlay.style.display = 'none';
+                                document.body.style.overflow = '';
+                            }
+                        }, 500);
+                    }
+                });
+            });
+
+            // Cerrar overlay y ventana
+            closeBtn.addEventListener('click', function () {
+                if (purchaseWindow && !purchaseWindow.closed) {
+                    purchaseWindow.close();
+                }
+                overlay.style.display = 'none';
+                document.body.style.overflow = '';
+            });
+        })();
+    </script>
     <?php
     return ob_get_clean();
 }
