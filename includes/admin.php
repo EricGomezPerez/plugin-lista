@@ -193,6 +193,9 @@ function entrapolis_settings_page()
             <h3>Detalle de evento</h3>
             <code>[entrapolis_event id="123"]</code>
             <p>Muestra el detalle de un evento específico.</p>
+            <br>
+            <code>[entrapolis_event]</code>
+            <p>Muestra el evento que se ha indicado desde el listado/calendario</p>
 
             <h3>Calendario</h3>
             <code>[entrapolis_calendar detail_page="detalle"]</code>
