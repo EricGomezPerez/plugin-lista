@@ -398,6 +398,7 @@
     .entrapolis-calendar-grid .entrapolis-calendar-day {
         min-height: 60px;
         padding: 4px;
+        position: relative;
     }
     
     .entrapolis-calendar-grid .entrapolis-calendar-day-number {
@@ -411,16 +412,56 @@
     }
     
     .entrapolis-calendar-tooltip {
+        position: absolute;
         min-width: 200px;
-        max-width: 280px;
+        max-width: calc(100vw - 40px);
         padding: 10px;
+        left: 50%;
+        top: auto;
+        bottom: calc(100% + 10px);
+        right: auto;
+        transform: translateX(-50%);
+        margin: 0;
+    }
+    
+    /* Ajustar tooltip para columnas de la izquierda (lunes y martes) */
+    .entrapolis-calendar-week .entrapolis-calendar-day:nth-child(1) .entrapolis-calendar-tooltip,
+    .entrapolis-calendar-week .entrapolis-calendar-day:nth-child(2) .entrapolis-calendar-tooltip {
+        left: 0;
+        transform: translateX(0);
+    }
+    
+    /* Ajustar tooltip para columnas de la derecha (sábado y domingo) */
+    .entrapolis-calendar-week .entrapolis-calendar-day:nth-child(6) .entrapolis-calendar-tooltip,
+    .entrapolis-calendar-week .entrapolis-calendar-day:nth-child(7) .entrapolis-calendar-tooltip {
         left: auto;
         right: 0;
-        transform: none;
+        transform: translateX(0);
     }
     
     .entrapolis-calendar-tooltip::after {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 8px solid transparent;
+        border-top-color: #fff;
+    }
+    
+    /* Ajustar flecha para columnas de la izquierda */
+    .entrapolis-calendar-week .entrapolis-calendar-day:nth-child(1) .entrapolis-calendar-tooltip::after,
+    .entrapolis-calendar-week .entrapolis-calendar-day:nth-child(2) .entrapolis-calendar-tooltip::after {
         left: 20px;
+        transform: translateX(0);
+    }
+    
+    /* Ajustar flecha para columnas de la derecha */
+    .entrapolis-calendar-week .entrapolis-calendar-day:nth-child(6) .entrapolis-calendar-tooltip::after,
+    .entrapolis-calendar-week .entrapolis-calendar-day:nth-child(7) .entrapolis-calendar-tooltip::after {
+        left: auto;
+        right: 20px;
+        transform: translateX(0);
     }
     
     .entrapolis-calendar-tooltip-event img {

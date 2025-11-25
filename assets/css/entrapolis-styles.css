@@ -155,17 +155,36 @@
     
     .entrapolis-events-container {
         max-width: 100%;
+        margin: 0 auto;
     }
 }
 
 @media (max-width: 768px) {
-    .entrapolis-events-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
+    .entrapolis-events-wrapper {
+        padding: 0 20px !important;
+    }
+    
+    .entrapolis-events-container {
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    
+    .entrapolis-events-grid,
+    .entrapolis-events-grid-content {
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+        justify-items: center !important;
+        margin: 0 auto !important;
+        display: grid !important;
+        width: 100% !important;
     }
     
     .entrapolis-event-card {
-        height: 350px;
+        height: 350px !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        margin: 0 auto !important;
     }
 }
 

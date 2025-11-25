@@ -135,6 +135,31 @@ export ENTRAPOLIS_API_TOKEN="tu_token_aqui"
 - Iframe incrustado 90% ancho, 1000px alto
 - Widget oficial de Entrapolis
 
+---
+
+### 6. Billboard (Hero de Evento)
+```
+[entrapolis_billboard event_id="12345" detail_page="detalle"]
+```
+**Parámetros:**
+- `event_id` (requerido): ID del evento a destacar
+- `detail_page` (opcional): Slug de la página de detalle
+
+**Características:**
+- Diseño a pantalla completa (altura de viewport - 150px)
+- Imagen de fondo del evento a tamaño completo
+- Caja de contenido con fondo negro semi-transparente (50% opacidad)
+- Título en mayúsculas (3.5rem) con texto blanco para máxima legibilidad
+- Descripción del evento en texto blanco
+- Botón de acción con colores configurables del admin
+- Posicionamiento absoluto en esquina inferior izquierda
+- Responsive y optimizado para todos los tamaños de pantalla
+
+**Uso recomendado:**
+- Página de inicio para destacar evento principal
+- Landings de campañas específicas
+- Promoción de eventos especiales o destacados
+
 ## Características Técnicas
 
 ### API Integration

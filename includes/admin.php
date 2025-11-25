@@ -203,6 +203,22 @@ function entrapolis_settings_page()
             <ul>
                 <li><code>detail_page</code>: Slug de la página de detalle</li>
             </ul>
+
+            <h3>Billboard (Hero de Evento)</h3>
+            <code>[entrapolis_billboard event_id="12345" detail_page="detalle"]</code>
+            <p>Muestra un evento destacado en formato hero a pantalla completa con imagen de fondo.</p>
+            <p><strong>Parámetros:</strong></p>
+            <ul>
+                <li><code>event_id</code>: ID del evento a destacar (requerido)</li>
+                <li><code>detail_page</code>: Slug de la página de detalle (opcional)</li>
+            </ul>
+            <p><strong>Características:</strong></p>
+            <ul>
+                <li>Diseño a pantalla completa con imagen de fondo</li>
+                <li>Título en mayúsculas con texto blanco sobre fondo negro semi-transparente</li>
+                <li>Botón de acción con colores configurables</li>
+                <li>Ideal para destacar eventos principales en página de inicio</li>
+            </ul>
         </div>
     </div>
 
