@@ -127,17 +127,9 @@ export ENTRAPOLIS_API_TOKEN="tu_token_aqui"
 - Días con eventos destacados en accent color
 - Click en día → va al detalle del primer evento
 
-### 5. Widget de Compra
-```
-[entrapolis_buy event_id="00000"]
-```
-**Características:**
-- Iframe incrustado 90% ancho, 1000px alto
-- Widget oficial de Entrapolis
-
 ---
 
-### 6. Billboard (Hero de Evento)
+### 5. Billboard (Hero de Evento)
 ```
 [entrapolis_billboard event_id="00000" detail_page="detalle"]
 ```
