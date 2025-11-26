@@ -179,22 +179,6 @@ Los colores configurados en el admin se aplican automáticamente a:
 - Click en fila → detalle del evento
 - Botón "Comprar entrades" → mismo sistema popup + overlay
 
-### AJAX Load More
-**Handlers**:
-- `wp_ajax_entrapolis_load_more_grid`
-- `wp_ajax_entrapolis_load_more_list`
-
-**Respuesta**:
-```json
-{
-  "success": true,
-  "data": {
-    "html": "...",
-    "has_more": true
-  }
-}
-```
-
 ### Responsive Design
 - **Desktop**: Grid 2 columnas, calendario horizontal
 - **Tablet** (< 768px): Grid 1 columna, calendario grid mensual
@@ -212,24 +196,6 @@ Los colores configurados en el admin se aplican automáticamente a:
 ### Agrupación de eventos
 Los eventos se agrupan por `title + image` para mostrar múltiples fechas del mismo evento como un único item con lista de fechas.
 
-## Seguridad
-
-- ✅ Nunca comitees `ENTRAPOLIS_API_TOKEN` en el repositorio
-- ✅ `.gitignore` incluido para proteger credenciales
-- ✅ Sanitización con `esc_html()`, `esc_url()`, `esc_attr()`
-- ✅ Nonces no necesarios (endpoints públicos read-only)
-
-## Preparar para GitHub
-
-```powershell
-cd path\to\entrapolis-plugin-lista
-git init
-git add .
-git commit -m "Initial plugin release"
-git remote add origin https://github.com/YOUR_USER/entrapolis-plugin-lista.git
-git push -u origin main
-```
-
 ## Contribuir
 
 Pull requests bienvenidos. Por favor:
@@ -241,6 +207,7 @@ Pull requests bienvenidos. Por favor:
 ## Soporte
 
 - API Entrapolis: https://www.entrapolis.com/api/events/
+- Perception: https://www.perception.cat/
 - WordPress Codex: https://codex.wordpress.org/
 
 ## Licencia
