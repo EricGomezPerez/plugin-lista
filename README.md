@@ -1,10 +1,10 @@
 # Entrapolis Plugin
 
-Plugin de WordPress para integrar eventos de Entrapolis mediante shortcodes personalizables. Incluye listado de eventos (grid y tabla), calendario responsive, página de detalle y sistema de compra con ventana emergente.
+Plugin de WordPress para integrar eventos de Entrapolis mediante shortcodes personalizables. Incluye listado de eventos (lista y tabla), calendario responsive, página de detalle y sistema cartel principal en grande.
 
 ## Características
 
-- **5 Shortcodes configurables**: Grid, Lista, Detalle, Compra y Calendario
+- **5 Shortcodes configurables**: Tabla, Lista, Detalle, Cartel y Calendario
 - **Colores personalizables**: Configura accent color y text color desde el panel de administración
 - **Calendario dual responsive**: Vista horizontal en desktop, grid mensual en móvil (Lunes-Domingo)
 - **Compra con overlay**: Ventana popup centrada con overlay oscuro y botón cerrar
@@ -24,10 +24,10 @@ entrapolis-plugin-lista/
 │   ├── cache-cleaner.php               # Limpieza manual de cache
 │   ├── shortcodes.php                  # Loader de shortcodes
 │   └── shortcodes/
-│       ├── shortcode_events_grid.php   # [entrapolis_events] Grid 2 columnas
-│       ├── shortcode_events_list.php   # [entrapolis_events_list] Tabla
+│       ├── shortcode_events_grid.php   # [entrapolis_events] Tabla en 2 columnas
+│       ├── shortcode_events_list.php   # [entrapolis_events_list] Lista de eventos
 │       ├── shortcode_events_detail.php # [entrapolis_event] Detalle dos columnas
-│       ├── shortcode_events_buy.php    # [entrapolis_buy] Widget compra
+│       ├── shortcode_events_billboard.php    # [entrapolis_billboard] Widget evento en grande
 │       └── shortcode_events_calendar.php # [entrapolis_calendar] Calendario dual
 ├── assets/
 │   └── css/
@@ -62,7 +62,7 @@ entrapolis-plugin-lista/
 **Opción 2**: Añadir en `wp-config.php`:
 ```php
 define('ENTRAPOLIS_API_TOKEN', 'tu_token_aqui');
-define('ENTRAPOLIS_ORG_ID', 2910);
+define('ENTRAPOLIS_ORG_ID', 0000);
 ```
 
 **Opción 3**: Variables de entorno del servidor:
@@ -76,7 +76,7 @@ export ENTRAPOLIS_API_TOKEN="tu_token_aqui"
 
 ### 1. Grid de Eventos (2 columnas con hover)
 ```
-[entrapolis_events org="2910" detail_page="evento" limit="4"]
+[entrapolis_events org="0000" detail_page="evento" limit="4"]
 ```
 **Parámetros:**
 - `org`: ID de organización (opcional, usa el del admin)
@@ -91,7 +91,7 @@ export ENTRAPOLIS_API_TOKEN="tu_token_aqui"
 
 ### 2. Lista de Eventos (tabla)
 ```
-[entrapolis_events_list org="2910" detail_page="evento" limit="10"]
+[entrapolis_events_list org="0000" detail_page="evento" limit="10"]
 ```
 **Características:**
 - Tabla con 4 columnas: imagen, título, fechas, acción
@@ -115,7 +115,7 @@ export ENTRAPOLIS_API_TOKEN="tu_token_aqui"
 
 ### 4. Calendario (dual responsive)
 ```
-[entrapolis_calendar org="2910" months="3" detail_page="evento"]
+[entrapolis_calendar org="0000" months="3" detail_page="evento"]
 ```
 **Parámetros:**
 - `months`: Meses a mostrar (default: 3)
@@ -129,7 +129,7 @@ export ENTRAPOLIS_API_TOKEN="tu_token_aqui"
 
 ### 5. Widget de Compra
 ```
-[entrapolis_buy event_id="12345"]
+[entrapolis_buy event_id="00000"]
 ```
 **Características:**
 - Iframe incrustado 90% ancho, 1000px alto
@@ -139,7 +139,7 @@ export ENTRAPOLIS_API_TOKEN="tu_token_aqui"
 
 ### 6. Billboard (Hero de Evento)
 ```
-[entrapolis_billboard event_id="12345" detail_page="detalle"]
+[entrapolis_billboard event_id="00000" detail_page="detalle"]
 ```
 **Parámetros:**
 - `event_id` (requerido): ID del evento a destacar
@@ -217,21 +217,6 @@ Los colores configurados en el admin se aplican automáticamente a:
 - `entrapolis-styles-detail.css`: v0.1.1
 - `entrapolis-styles-button.css`: v0.1.1
 
-### Estructura de datos (API)
-```php
-$event = [
-  'id' => 12345,
-  'title' => 'Título del evento',
-  'image' => 'https://www.entrapolis.com/path/image.jpg',
-  'date_readable' => '2024-12-25 20:00:00',
-  'category' => 'Teatre',
-  'description' => 'Descripción...',
-  'location' => 'Teatre Principal',
-  'url' => 'https://...',
-  'url_widget' => 'https://www.entrapolis.com/entradas/.../widget'
-];
-```
-
 ### Agrupación de eventos
 Los eventos se agrupan por `title + image` para mostrar múltiples fechas del mismo evento como un único item con lista de fechas.
 
@@ -252,32 +237,6 @@ git commit -m "Initial plugin release"
 git remote add origin https://github.com/YOUR_USER/entrapolis-plugin-lista.git
 git push -u origin main
 ```
-
-**Crear release ZIP**:
-1. GitHub → Releases → Draft a new release
-2. Tag: `v0.1.0`
-3. Upload ZIP del directorio del plugin
-
-## Testing en Móvil (localhost)
-
-### Opción 1: Misma red WiFi
-```powershell
-ipconfig  # Obtén tu IP local (ej: 192.168.1.100)
-```
-
-Edita `wp-config.php`:
-```php
-define('WP_HOME', 'http://192.168.1.100');
-define('WP_SITEURL', 'http://192.168.1.100');
-```
-
-Accede desde móvil: `http://192.168.1.100`
-
-### Opción 2: ngrok (túnel público)
-```powershell
-ngrok http 80
-```
-Copia la URL generada y actualiza `wp-config.php`
 
 ## Contribuir
 

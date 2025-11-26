@@ -15,6 +15,12 @@ Configuración de Locale en español
 setlocale(LC_TIME, 'es_ES.UTF-8', 'es_ES', 'spanish');
 
 /*
+Configuracion de Locales en catalan
+*/
+
+setlocale(LC_TIME, 'ca_ES.UTF-8', 'ca_ES', 'catalan');
+
+/*
 Definiciones de constantes
 */
 define('ENTRAPOLIS_API_BASE', 'http://www.entrapolis.com');

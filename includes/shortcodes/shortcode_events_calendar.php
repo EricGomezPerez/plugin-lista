@@ -52,7 +52,7 @@ function entrapolis_shortcode_calendar($atts)
     $months_data = array();
     $current_date = new DateTime();
     $days_catalan = entrapolis_get_catalan_days();
-    $days_header = array('Dl', 'Dm', 'Dc', 'Dj', 'Dv', 'Ds', 'Dg');
+    $days_header = array('Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa', 'Do');
     $today = date('Y-m-d');
 
     for ($i = 0; $i < $months_ahead; $i++) {
@@ -73,7 +73,7 @@ function entrapolis_shortcode_calendar($atts)
 
         foreach ($period as $date) {
             $date_str = $date->format('Y-m-d');
-            $day_of_week = $date->format('w'); // 0 (domingo) a 6 (sábado)
+            $day_of_week = $date->format('w');
             $days_horizontal[] = array(
                 'date' => $date_str,
                 'day_num' => $date->format('j'),
