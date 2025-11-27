@@ -11,16 +11,55 @@ function entrapolis_shortcode_event_detail($atts)
 {
     $atts = shortcode_atts(array(
         'id' => 0,
+        'lang' => '',
     ), $atts, 'entrapolis_event');
 
     $event_id = intval($atts['id']);
+    $lang = sanitize_text_field($atts['lang']);
 
     if (!$event_id && isset($_GET['entrapolis_event'])) {
         $event_id = intval($_GET['entrapolis_event']);
     }
 
+    $lang_code = in_array($lang, array('ca', 'es', 'en')) ? $lang : 'ca';
+
+    // Traducciones
+    $texts = array(
+        'ca' => array(
+            'no_event' => 'Cap esdeveniment especificat.',
+            'error_loading' => 'Error carregant l\'esdeveniment',
+            'not_found' => 'Esdeveniment no trobat.',
+            'category' => 'Categoria:',
+            'location' => 'Ubicació:',
+            'dates_title' => 'Dates disponibles',
+            'buy' => 'Comprar entrades',
+            'default_location' => 'Teatre Principal',
+        ),
+        'es' => array(
+            'no_event' => 'Ningún evento especificado.',
+            'error_loading' => 'Error cargando el evento',
+            'not_found' => 'Evento no encontrado.',
+            'category' => 'Categoría:',
+            'location' => 'Ubicación:',
+            'dates_title' => 'Fechas disponibles',
+            'buy' => 'Comprar entradas',
+            'default_location' => 'Teatro Principal',
+        ),
+        'en' => array(
+            'no_event' => 'No event specified.',
+            'error_loading' => 'Error loading event',
+            'not_found' => 'Event not found.',
+            'category' => 'Category:',
+            'location' => 'Location:',
+            'dates_title' => 'Available dates',
+            'buy' => 'Buy tickets',
+            'default_location' => 'Main Theatre',
+        ),
+    );
+    $t = $texts[$lang_code];
+
     if (!$event_id) {
-        return '<div class="entrapolis-error">Cap esdeveniment especificat.</div>';
+        return '<div class="entrapolis-error">' . esc_html($t['no_event']) . '</div>';
     }
 
     $result = entrapolis_api_post('/api/event/', array(
@@ -28,11 +67,11 @@ function entrapolis_shortcode_event_detail($atts)
     ));
 
     if (is_wp_error($result)) {
-        return '<div class="entrapolis-error">Error carregant l\'esdeveniment: ' . esc_html($result->get_error_message()) . '</div>';
+        return '<div class="entrapolis-error">' . esc_html($t['error_loading']) . ': ' . esc_html($result->get_error_message()) . '</div>';
     }
 
     if (empty($result['event'])) {
-        return '<div class="entrapolis-error">Esdeveniment no trobat.</div>';
+        return '<div class="entrapolis-error">' . esc_html($t['not_found']) . '</div>';
     }
 
     $event = $result['event'];
@@ -64,15 +103,60 @@ function entrapolis_shortcode_event_detail($atts)
     }
 
     $title = esc_html($title);
-    $location = isset($event['location']) ? esc_html($event['location']) : '';
+    $location = isset($event['location']) && !empty($event['location']) ? esc_html($event['location']) : $t['default_location'];
     $image = !empty($image) ? str_replace('https://www.entrapolis.com/', 'https://cdn.perception.es/v7/_ep/', $image) : '';
     $url_widget = !empty($event['url_widget']) ? $event['url_widget'] : '';
     $url = !empty($event['url']) ? $event['url'] : '';
 
-    $months_catalan = entrapolis_get_catalan_months();
+    // Meses en diferentes idiomas
+    $months = array(
+        'ca' => array(
+            1 => 'gener',
+            2 => 'febrer',
+            3 => 'març',
+            4 => 'abril',
+            5 => 'maig',
+            6 => 'juny',
+            7 => 'juliol',
+            8 => 'agost',
+            9 => 'setembre',
+            10 => 'octubre',
+            11 => 'novembre',
+            12 => 'desembre'
+        ),
+        'es' => array(
+            1 => 'enero',
+            2 => 'febrero',
+            3 => 'marzo',
+            4 => 'abril',
+            5 => 'mayo',
+            6 => 'junio',
+            7 => 'julio',
+            8 => 'agosto',
+            9 => 'septiembre',
+            10 => 'octubre',
+            11 => 'noviembre',
+            12 => 'diciembre'
+        ),
+        'en' => array(
+            1 => 'January',
+            2 => 'February',
+            3 => 'March',
+            4 => 'April',
+            5 => 'May',
+            6 => 'June',
+            7 => 'July',
+            8 => 'August',
+            9 => 'September',
+            10 => 'October',
+            11 => 'November',
+            12 => 'December'
+        )
+    );
+    $month_names = $months[$lang_code];
+
     $category = isset($event['category']) ? esc_html($event['category']) : '';
-    $description = isset($event['description']) && !empty($event['description']) ? esc_html($event['description']) : 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.';
-    $location = isset($event['location']) && !empty($event['location']) ? esc_html($event['location']) : 'Teatre Principal';
+    $description = isset($event['description']) && !empty($event['description']) ? esc_html($event['description']) : '';
 
     ob_start();
     ?>
@@ -92,7 +176,7 @@ function entrapolis_shortcode_event_detail($atts)
 
                 <?php if ($category): ?>
                     <div class="entrapolis-event-category">
-                        <span class="category-label">Categoria:</span>
+                        <span class="category-label"><?php echo esc_html($t['category']); ?></span>
                         <span class="category-value"><?php echo $category; ?></span>
                     </div>
                 <?php endif; ?>
@@ -105,7 +189,7 @@ function entrapolis_shortcode_event_detail($atts)
 
                 <?php if ($location): ?>
                     <div class="entrapolis-event-location">
-                        <span class="location-label">Ubicació:</span>
+                        <span class="location-label"><?php echo esc_html($t['location']); ?></span>
                         <span class="location-value"><?php echo $location; ?></span>
                     </div>
                 <?php endif; ?>
@@ -113,17 +197,17 @@ function entrapolis_shortcode_event_detail($atts)
                 <?php if (!empty($related_events)): ?>
                     <div class="entrapolis-event-dates-section">
                         <div class="entrapolis-dates-header">
-                            <h3 class="dates-title">Dates disponibles</h3>
+                            <h3 class="dates-title"><?php echo esc_html($t['dates_title']); ?></h3>
                             <div class="entrapolis-event-actions">
                                 <?php if ($url_widget): ?>
                                     <a class="entrapolis-event-buy-link" href="<?php echo esc_url($url_widget); ?>"
                                         onclick="var w=900,h=700,l=(screen.width-w)/2,t=(screen.height-h)/2; window.open(this.href, 'CompraEntrades', 'width='+w+',height='+h+',left='+l+',top='+t+',resizable=yes,scrollbars=yes'); return false;">
-                                        Comprar entrades
+                                        <?php echo esc_html($t['buy']); ?>
                                     </a>
                                 <?php elseif ($url): ?>
                                     <a class="entrapolis-event-buy-link" href="<?php echo esc_url($url); ?>"
                                         onclick="var w=900,h=700,l=(screen.width-w)/2,t=(screen.height-h)/2; window.open(this.href, 'CompraEntrades', 'width='+w+',height='+h+',left='+l+',top='+t+',resizable=yes,scrollbars=yes'); return false;">
-                                        Comprar entrades
+                                        <?php echo esc_html($t['buy']); ?>
                                     </a>
                                 <?php endif; ?>
                             </div>
@@ -138,9 +222,16 @@ function entrapolis_shortcode_event_detail($atts)
                                     $day = intval($matches[3]);
                                     $hour = $matches[4];
                                     $minute = $matches[5];
-
-                                    $month_name = isset($months_catalan[$month_num]) ? $months_catalan[$month_num] : $month_num;
-                                    $formatted_date = "$day de $month_name de $year a les $hour:$minute";
+                                    $month_name = isset($month_names[$month_num]) ? $month_names[$month_num] : $month_num;
+                                    if ($lang_code === 'ca') {
+                                        $formatted_date = "$day de $month_name de $year a les $hour:$minute";
+                                    } elseif ($lang_code === 'es') {
+                                        $formatted_date = "$day de $month_name de $year a las $hour:$minute";
+                                    } elseif ($lang_code === 'en') {
+                                        $formatted_date = "$month_name $day, $year at $hour:$minute";
+                                    } else {
+                                        $formatted_date = "$day de $month_name de $year a les $hour:$minute";
+                                    }
                                 } else {
                                     $formatted_date = $rel_evt['date_readable'];
                                 }

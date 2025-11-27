@@ -16,11 +16,81 @@ function entrapolis_shortcode_events_list($atts)
         'org' => ENTRAPOLIS_ORG_ID,
         'detail_page' => '',
         'limit' => 10,
+        'lang' => '',
     ), $atts, 'entrapolis_events_list');
 
     $org_id = intval($atts['org']);
     $detail_page_slug = sanitize_text_field($atts['detail_page']);
     $limit = intval($atts['limit']);
+    $lang = sanitize_text_field($atts['lang']);
+    $lang_code = in_array($lang, array('ca', 'es', 'en')) ? $lang : 'ca';
+
+    // Traducciones
+    $texts = array(
+        'ca' => array(
+            'buy' => 'Comprar entrades',
+            'load_more' => 'Carregar més esdeveniments',
+            'loading' => 'Carregant...',
+        ),
+        'es' => array(
+            'buy' => 'Comprar entradas',
+            'load_more' => 'Cargar más eventos',
+            'loading' => 'Cargando...',
+        ),
+        'en' => array(
+            'buy' => 'Buy tickets',
+            'load_more' => 'Load more events',
+            'loading' => 'Loading...',
+        ),
+    );
+    $t = $texts[$lang_code];
+
+    // Meses en diferentes idiomas
+    $months = array(
+        'ca' => array(
+            1 => 'gener',
+            2 => 'febrer',
+            3 => 'març',
+            4 => 'abril',
+            5 => 'maig',
+            6 => 'juny',
+            7 => 'juliol',
+            8 => 'agost',
+            9 => 'setembre',
+            10 => 'octubre',
+            11 => 'novembre',
+            12 => 'desembre'
+        ),
+        'es' => array(
+            1 => 'enero',
+            2 => 'febrero',
+            3 => 'marzo',
+            4 => 'abril',
+            5 => 'mayo',
+            6 => 'junio',
+            7 => 'julio',
+            8 => 'agosto',
+            9 => 'septiembre',
+            10 => 'octubre',
+            11 => 'noviembre',
+            12 => 'diciembre'
+        ),
+        'en' => array(
+            1 => 'January',
+            2 => 'February',
+            3 => 'March',
+            4 => 'April',
+            5 => 'May',
+            6 => 'June',
+            7 => 'July',
+            8 => 'August',
+            9 => 'September',
+            10 => 'October',
+            11 => 'November',
+            12 => 'December'
+        )
+    );
+    $month_names = $months[$lang_code];
 
     $cache_key = 'entrapolis_events_' . $org_id;
     $events = get_transient($cache_key);
@@ -93,7 +163,7 @@ function entrapolis_shortcode_events_list($atts)
                         $detail_url = home_url('/' . $detail_page_slug . '/?entrapolis_event=' . $id);
                     }
 
-                    // Formatear todas las fechas
+                    // Formatear todas las fechas según idioma
                     $formatted_dates = array();
                     foreach ($event['dates'] as $date) {
                         preg_match('/(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})/', $date, $matches);
@@ -103,8 +173,16 @@ function entrapolis_shortcode_events_list($atts)
                             $day = intval($matches[3]);
                             $hour = $matches[4];
                             $minute = $matches[5];
-                            $month_name = isset($months_catalan[$month_num]) ? $months_catalan[$month_num] : $month_num;
-                            $formatted_dates[] = "$day de $month_name de $year a les $hour:$minute";
+                            $month_name = isset($month_names[$month_num]) ? $month_names[$month_num] : $month_num;
+                            if ($lang_code === 'ca') {
+                                $formatted_dates[] = "$day de $month_name de $year a les $hour:$minute";
+                            } elseif ($lang_code === 'es') {
+                                $formatted_dates[] = "$day de $month_name de $year a las $hour:$minute";
+                            } elseif ($lang_code === 'en') {
+                                $formatted_dates[] = "$month_name $day, $year at $hour:$minute";
+                            } else {
+                                $formatted_dates[] = "$day de $month_name de $year a les $hour:$minute";
+                            }
                         } else {
                             $formatted_dates[] = $date;
                         }
@@ -136,7 +214,7 @@ function entrapolis_shortcode_events_list($atts)
                             <?php if ($buy_url): ?>
                                 <a href="javascript:void(0);" class="entrapolis-btn-buy"
                                     data-buy-url="<?php echo esc_url($buy_url); ?>">
-                                    Comprar entrades
+                                    <?php echo esc_html($t['buy']); ?>
                                 </a>
                             <?php endif; ?>
                         </td>
@@ -147,9 +225,9 @@ function entrapolis_shortcode_events_list($atts)
         <?php if ($has_more): ?>
             <div class="entrapolis-load-more-wrapper">
                 <button class="entrapolis-load-more-btn" data-target="<?php echo $unique_id; ?>">
-                    Carregar més esdeveniments
+                    <?php echo esc_html($t['load_more']); ?>
                 </button>
-                <span class="entrapolis-loading" style="display:none;">Carregant...</span>
+                <span class="entrapolis-loading" style="display:none;"><?php echo esc_html($t['loading']); ?></span>
             </div>
         <?php endif; ?>
     </div>

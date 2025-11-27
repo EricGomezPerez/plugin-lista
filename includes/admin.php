@@ -161,25 +161,28 @@ function entrapolis_settings_page()
 
         <hr>
         <div class="entrapolis-admin-info">
-            <h2>Uso de Shortcodes</h2>
+            <h1>Uso de Shortcodes</h1>
+
 
             <h3>Listado de eventos (Grid)</h3>
-            <code>[entrapolis_events limit="4" detail_page="detalle"]</code>
+            <code>[entrapolis_events limit="4" detail_page="detalle" lang="es"]</code>
             <p>Muestra un grid con los próximos eventos. Parámetros opcionales:</p>
             <ul>
                 <li><code>org</code>: ID de organización (por defecto usa el configurado arriba)</li>
                 <li><code>limit</code>: Número máximo de eventos a mostrar</li>
                 <li><code>detail_page</code>: Slug de la página de detalle</li>
+                <li><code>lang</code>: Idioma de los textos y fechas(<code>ca</code>, <code>es</code>, <code>en</code>)</li>
             </ul>
 
             <h3>Listado de eventos (Tabla)</h3>
-            <code>[entrapolis_events_list limit="10" detail_page="detalle"]</code>
+            <code>[entrapolis_events_list limit="10" detail_page="detalle" lang="es"]</code>
             <p>Muestra una tabla con los eventos ordenados en columnas: imagen, título, fechas y botón de detalle.
                 Parámetros opcionales:</p>
             <ul>
                 <li><code>org</code>: ID de organización (por defecto usa el configurado arriba)</li>
                 <li><code>limit</code>: Número máximo de eventos a mostrar (por defecto 10)</li>
                 <li><code>detail_page</code>: Slug de la página de detalle</li>
+                <li><code>lang</code>: Idioma de los textos y fechas(<code>ca</code>, <code>es</code>, <code>en</code>)</li>
             </ul>
             <p><strong>Características:</strong></p>
             <ul>
@@ -191,32 +194,36 @@ function entrapolis_settings_page()
             </ul>
 
             <h3>Detalle de evento</h3>
-            <code>[entrapolis_event id="123"]</code>
+            <code>[entrapolis_event id="123" lang="es"]</code>
             <p>Muestra el detalle de un evento específico.</p>
             <br>
-            <code>[entrapolis_event]</code>
+            <code>[entrapolis_event lang="es"]</code>
             <p>Muestra el evento que se ha indicado desde el listado/calendario</p>
 
             <h3>Calendario</h3>
-            <code>[entrapolis_calendar detail_page="detalle"]</code>
+            <code>[entrapolis_calendar detail_page="detalle" lang="es"]</code>
             <p>Muestra un calendario interactivo con los eventos. Parámetros opcionales:</p>
             <ul>
                 <li><code>detail_page</code>: Slug de la página de detalle</li>
+                <li><code>lang</code>: Idioma de los textos y fechas (<code>ca</code>, <code>es</code>, <code>en</code>)
+                </li>
             </ul>
 
             <h3>Billboard (Hero de Evento)</h3>
-            <code>[entrapolis_billboard event_id="12345" detail_page="detalle"]</code>
+            <code>[entrapolis_billboard event_id="12345" detail_page="detalle" lang="es"]</code>
             <p>Muestra un evento destacado en formato hero a pantalla completa con imagen de fondo.</p>
             <p><strong>Parámetros:</strong></p>
             <ul>
                 <li><code>event_id</code>: ID del evento a destacar (requerido)</li>
                 <li><code>detail_page</code>: Slug de la página de detalle (opcional)</li>
+                <li><code>lang</code>: Idioma de los textos y fechas (<code>ca</code>, <code>es</code>, <code>en</code>)
+                </li>
             </ul>
             <p><strong>Características:</strong></p>
             <ul>
                 <li>Diseño a pantalla completa con imagen de fondo</li>
                 <li>Título en mayúsculas con texto blanco sobre fondo negro semi-transparente</li>
-                <li>Botón de acción con colores configurables</li>
+                <li>Botón de acción con colores configurables y traducido</li>
                 <li>Ideal para destacar eventos principales en página de inicio</li>
             </ul>
         </div>

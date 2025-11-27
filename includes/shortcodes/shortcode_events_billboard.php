@@ -15,13 +15,35 @@ function entrapolis_shortcode_billboard($atts)
     $atts = shortcode_atts(array(
         'event_id' => '',
         'detail_page' => '',
+        'lang' => '',
     ), $atts, 'entrapolis_billboard');
 
     $event_id = intval($atts['event_id']);
     $detail_page_slug = sanitize_text_field($atts['detail_page']);
+    $lang = sanitize_text_field($atts['lang']);
+    $lang_code = in_array($lang, array('ca', 'es', 'en')) ? $lang : 'ca';
+
+    // Traducciones
+    $texts = array(
+        'ca' => array(
+            'more_info' => 'Més informació',
+        ),
+        'es' => array(
+            'more_info' => 'Más información',
+        ),
+        'en' => array(
+            'more_info' => 'More information',
+        ),
+    );
+    $t = $texts[$lang_code];
 
     if (!$event_id) {
-        return '<div class="entrapolis-error">Es requereix un ID d\'esdeveniment.</div>';
+        $error_msgs = array(
+            'ca' => 'Es requereix un ID d\'esdeveniment.',
+            'es' => 'Se requiere un ID de evento.',
+            'en' => 'Event ID is required.',
+        );
+        return '<div class="entrapolis-error">' . esc_html($error_msgs[$lang_code]) . '</div>';
     }
 
     // Obtener evento desde la API
@@ -49,19 +71,71 @@ function entrapolis_shortcode_billboard($atts)
     $image = !empty($event['image']) ? str_replace('https://www.entrapolis.com/', 'https://cdn.perception.es/v7/_ep/', $event['image']) : '';
     $date_readable = isset($event['date_readable']) ? $event['date_readable'] : '';
 
-    // Formatear fecha
+    // Formatear fecha según idioma
     $formatted_date = '';
     if ($date_readable) {
         preg_match('/(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})/', $date_readable, $matches);
+        $months = array(
+            'ca' => array(
+                1 => 'gener',
+                2 => 'febrer',
+                3 => 'març',
+                4 => 'abril',
+                5 => 'maig',
+                6 => 'juny',
+                7 => 'juliol',
+                8 => 'agost',
+                9 => 'setembre',
+                10 => 'octubre',
+                11 => 'novembre',
+                12 => 'desembre'
+            ),
+            'es' => array(
+                1 => 'enero',
+                2 => 'febrero',
+                3 => 'marzo',
+                4 => 'abril',
+                5 => 'mayo',
+                6 => 'junio',
+                7 => 'julio',
+                8 => 'agosto',
+                9 => 'septiembre',
+                10 => 'octubre',
+                11 => 'noviembre',
+                12 => 'diciembre'
+            ),
+            'en' => array(
+                1 => 'January',
+                2 => 'February',
+                3 => 'March',
+                4 => 'April',
+                5 => 'May',
+                6 => 'June',
+                7 => 'July',
+                8 => 'August',
+                9 => 'September',
+                10 => 'October',
+                11 => 'November',
+                12 => 'December'
+            )
+        );
+        $month_names = $months[$lang_code];
         if ($matches) {
-            $months_catalan = entrapolis_get_catalan_months();
             $year = $matches[1];
             $month_num = intval($matches[2]);
             $day = intval($matches[3]);
             $hour = $matches[4];
             $minute = $matches[5];
-            $month_name = isset($months_catalan[$month_num]) ? $months_catalan[$month_num] : $month_num;
-            $formatted_date = "$day de $month_name de $year a les $hour:$minute";
+            $month_name = isset($month_names[$month_num]) ? $month_names[$month_num] : $month_num;
+            if ($lang_code === 'ca') {
+                $formatted_date = "$day de $month_name de $year a les $hour:$minute";
+            } elseif ($lang_code === 'es') {
+                $formatted_date = "$day de $month_name de $year a las $hour:$minute";
+            } elseif ($lang_code === 'en') {
+                $formatted_date = "$month_name $day, $year at $hour:$minute";
+            } else {
+                $formatted_date = "$day de $month_name de $year a les $hour:$minute";
+            }
         } else {
             $formatted_date = $date_readable;
         }
@@ -91,7 +165,7 @@ function entrapolis_shortcode_billboard($atts)
 
             <?php if ($detail_url): ?>
                 <a href="<?php echo esc_url($detail_url); ?>" class="entrapolis-billboard-btn">
-                    Més informació
+                    <?php echo esc_html($t['more_info']); ?>
                 </a>
             <?php endif; ?>
         </div>

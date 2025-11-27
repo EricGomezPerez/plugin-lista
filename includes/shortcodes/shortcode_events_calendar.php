@@ -11,12 +11,42 @@ function entrapolis_shortcode_calendar($atts)
 {
     $atts = shortcode_atts(array(
         'org' => ENTRAPOLIS_ORG_ID,
-        'months' => 3,
+        'months' => 24,
         'detail_page' => '',
+        'lang' => '',
     ), $atts, 'entrapolis_calendar');
 
     $org_id = intval($atts['org']);
     $months_ahead = intval($atts['months']);
+    $lang = sanitize_text_field($atts['lang']);
+    $lang_code = in_array($lang, array('ca', 'es', 'en')) ? $lang : 'ca';
+
+    // Traducciones
+    $texts = array(
+        'ca' => array(
+            'prev' => 'Mes anterior',
+            'next' => 'Mes següent',
+            'days_header' => array('Dl', 'Dt', 'Dc', 'Dj', 'Dv', 'Ds', 'Dg'),
+        ),
+        'es' => array(
+            'prev' => 'Mes anterior',
+            'next' => 'Mes siguiente',
+            'days_header' => array('Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa', 'Do'),
+        ),
+        'en' => array(
+            'prev' => 'Previous month',
+            'next' => 'Next month',
+            'days_header' => array('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'),
+        ),
+    );
+    $t = $texts[$lang_code];
+
+    // Meses en diferentes idiomas
+    $months_names = array(
+        'ca' => array('gener', 'febrer', 'març', 'abril', 'maig', 'juny', 'juliol', 'agost', 'setembre', 'octubre', 'novembre', 'desembre'),
+        'es' => array('enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'),
+        'en' => array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'),
+    );
 
     $cache_key = 'entrapolis_events_' . $org_id;
     $events = get_transient($cache_key);
@@ -51,8 +81,8 @@ function entrapolis_shortcode_calendar($atts)
     // Generar meses
     $months_data = array();
     $current_date = new DateTime();
-    $days_catalan = entrapolis_get_catalan_days();
-    $days_header = array('Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa', 'Do');
+    // Días de la semana según idioma
+    $days_names = $t['days_header'];
     $today = date('Y-m-d');
 
     for ($i = 0; $i < $months_ahead; $i++) {
@@ -60,7 +90,9 @@ function entrapolis_shortcode_calendar($atts)
         $month_date->modify("+{$i} months");
 
         $month_key = $month_date->format('Y-m');
-        $month_name = strftime('%B %Y', $month_date->getTimestamp());
+        $month_num = intval($month_date->format('n')) - 1;
+        $year = $month_date->format('Y');
+        $month_name = ucfirst($months_names[$lang_code][$month_num]) . ' ' . $year;
 
         // Primer y último día del mes
         $first_day = new DateTime($month_date->format('Y-m-01'));
@@ -77,7 +109,7 @@ function entrapolis_shortcode_calendar($atts)
             $days_horizontal[] = array(
                 'date' => $date_str,
                 'day_num' => $date->format('j'),
-                'day_name' => $days_catalan[$day_of_week],
+                'day_name' => $days_names[$day_of_week == 0 ? 6 : $day_of_week - 1],
                 'has_events' => isset($events_by_date[$date_str]),
                 'events' => isset($events_by_date[$date_str]) ? $events_by_date[$date_str] : array(),
                 'is_today' => $date_str === $today,
@@ -139,14 +171,14 @@ function entrapolis_shortcode_calendar($atts)
 
         $months_data[] = array(
             'key' => $month_key,
-            'name' => ucfirst($month_name),
+            'name' => $month_name,
             'days' => $days_horizontal,
             'weeks' => $weeks,
-            'days_header' => $days_header,
+            'days_header' => $days_names,
         );
     }
 
-    $months_catalan = entrapolis_get_catalan_months();
+    // $months_catalan = entrapolis_get_catalan_months();
 
     ob_start();
     ?>
@@ -158,9 +190,9 @@ function entrapolis_shortcode_calendar($atts)
 
                     <!-- Header con navegación -->
                     <div class="entrapolis-calendar-header">
-                        <button class="entrapolis-calendar-prev" aria-label="Mes anterior">‹</button>
+                        <button class="entrapolis-calendar-prev" aria-label="<?php echo esc_attr($t['prev']); ?>">‹</button>
                         <div class="entrapolis-calendar-month-name"><?php echo esc_html($month['name']); ?></div>
-                        <button class="entrapolis-calendar-next" aria-label="Mes següent">›</button>
+                        <button class="entrapolis-calendar-next" aria-label="<?php echo esc_attr($t['next']); ?>">›</button>
                     </div>
 
                     <!-- Contenedor para vistas -->
