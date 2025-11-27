@@ -38,9 +38,9 @@ function entrapolis_register_settings()
     ));
 
     register_setting('entrapolis_settings_group', 'entrapolis_org_id', array(
-        'type' => 'integer',
-        'sanitize_callback' => 'absint',
-        'default' => 2910
+        'type' => 'string',
+        'sanitize_callback' => 'sanitize_text_field',
+        'default' => ''
     ));
 
     register_setting('entrapolis_settings_group', 'entrapolis_accent_color', array(

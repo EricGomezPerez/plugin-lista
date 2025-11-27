@@ -147,7 +147,7 @@ function entrapolis_get_category_colors()
         'Música' => '#1a8cff',
         'Teatre Familiar' => '#ea8b00',
         'Dansa' => '#a1248e',
-        'Generic' => '#707070',
+        'Generic' => '#e31e24',
     );
 }
 

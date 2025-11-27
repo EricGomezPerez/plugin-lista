@@ -77,7 +77,7 @@ function entrapolis_shortcode_events($atts)
         'Música' => '#1a8cff',
         'Teatre Familiar' => '#ea8b00',
         'Dansa' => '#a1248e',
-        'Generic' => '#707070',
+        'Generic' => '#e31e24',
     );
 
     $months_catalan = array(
@@ -118,7 +118,7 @@ function entrapolis_shortcode_events($atts)
                     $image = !empty($event['image']) ? str_replace('https://www.entrapolis.com/', 'https://cdn.perception.es/v7/_ep/', $event['image']) : '';
 
                     // Obtener color de categoría
-                    $category_color = isset($category_colors[$category]) ? $category_colors[$category] : '#707070';
+                    $category_color = isset($category_colors[$category]) ? $category_colors[$category] : '#e31e24';
 
                     // Formatear primera fecha
                     $first_date = $event['dates'][0];
