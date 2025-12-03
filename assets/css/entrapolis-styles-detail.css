@@ -2,6 +2,7 @@
 .entrapolis-event-detail {
     max-width: 1200px;
     margin: 40px auto;
+    margin-top: 40px !important;
     padding: 0;
     background: transparent;
     display: block !important;

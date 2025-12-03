@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Entrapolis
- * Plugin URI: https://github.com/your-org/entrapolis-plugin-lista
+ * Plugin URI: https://perception.es
  * Description: Integración con Entrapolis — shortcodes para listar esdeveniments, calendari i widget de compra.
  * Version: 0.2.0
  * Author: Perception

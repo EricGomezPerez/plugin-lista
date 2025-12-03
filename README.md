@@ -206,7 +206,6 @@ Pull requests bienvenidos. Por favor:
 
 ## Soporte
 
-- API Entrapolis: https://www.entrapolis.com/api/events/
 - Perception: https://www.perception.cat/
 - WordPress Codex: https://codex.wordpress.org/
 
