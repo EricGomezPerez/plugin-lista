@@ -43,7 +43,7 @@ entrapolis-plugin-lista/
 
 ## Instalación
 
-1. Subir el directorio `entrapolis-plugin-lista` a `wp-content/plugins/`
+1. Subir el directorio `entrapolis-plugin` a `wp-content/plugins/`
 2. Activar el plugin desde el panel de administración de WordPress
 3. Ir a **WordPress Admin → Entrapolis** y configurar:
 

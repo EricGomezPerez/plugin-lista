@@ -6,7 +6,7 @@
  * Version: 0.2.0
  * Author: Perception
  * Author URI: https://perception.es
- * Text Domain: entrapolis-plugin-lista
+ * Text Domain: entrapolis-plugin
  * Domain Path: /languages
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
