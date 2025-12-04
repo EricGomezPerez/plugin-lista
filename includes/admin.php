@@ -54,6 +54,18 @@ function entrapolis_register_settings()
         'sanitize_callback' => 'sanitize_hex_color',
         'default' => '#ffffff'
     ));
+
+    register_setting('entrapolis_settings_group', 'entrapolis_generic_color', array(
+        'type' => 'string',
+        'sanitize_callback' => 'sanitize_hex_color',
+        'default' => '#e31e24'
+    ));
+
+    register_setting('entrapolis_settings_group', 'entrapolis_generic_text_color', array(
+        'type' => 'string',
+        'sanitize_callback' => 'sanitize_hex_color',
+        'default' => '#ffffff'
+    ));
 }
 add_action('admin_init', 'entrapolis_register_settings');
 
@@ -143,6 +155,32 @@ function entrapolis_settings_page()
                             </p>
                         </td>
                     </tr>
+
+                    <tr>
+                        <th scope="row">
+                            <label for="entrapolis_generic_color">Color Genérico de Eventos</label>
+                        </th>
+                        <td>
+                            <input type="color" id="entrapolis_generic_color" name="entrapolis_generic_color"
+                                value="<?php echo esc_attr(get_option('entrapolis_generic_color', '#e31e24')); ?>">
+                            <p class="description">
+                                Color de fondo para eventos en el grid / formato panel (por defecto: rojo #e31e24).
+                            </p>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th scope="row">
+                            <label for="entrapolis_generic_text_color">Color de Texto Genérico</label>
+                        </th>
+                        <td>
+                            <input type="color" id="entrapolis_generic_text_color" name="entrapolis_generic_text_color"
+                                value="<?php echo esc_attr(get_option('entrapolis_generic_text_color', '#ffffff')); ?>">
+                            <p class="description">
+                                Color del texto para eventos en el grid / formato panel (por defecto: blanco #ffffff).
+                            </p>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
 
@@ -168,8 +206,7 @@ function entrapolis_settings_page()
             <code>[entrapolis_events limit="4" detail_page="detalle" lang="es"]</code>
             <p>Muestra un grid con los próximos eventos. Parámetros opcionales:</p>
             <ul>
-                <li><code>org</code>: ID de organización (por defecto usa el configurado arriba)</li>
-                <li><code>limit</code>: Número máximo de eventos a mostrar</li>
+                <li><code>limit</code>: Número máximo de eventos a mostrar (por defecto 4, 0 = sin límite)</li>
                 <li><code>detail_page</code>: Slug de la página de detalle</li>
                 <li><code>lang</code>: Idioma de los textos y fechas(<code>ca</code>, <code>es</code>, <code>en</code>)</li>
             </ul>
@@ -179,8 +216,7 @@ function entrapolis_settings_page()
             <p>Muestra una tabla con los eventos ordenados en columnas: imagen, título, fechas y botón de detalle.
                 Parámetros opcionales:</p>
             <ul>
-                <li><code>org</code>: ID de organización (por defecto usa el configurado arriba)</li>
-                <li><code>limit</code>: Número máximo de eventos a mostrar (por defecto 10)</li>
+                <li><code>limit</code>: Número máximo de eventos a mostrar (por defecto 10, 0 = sin límite)</li>
                 <li><code>detail_page</code>: Slug de la página de detalle</li>
                 <li><code>lang</code>: Idioma de los textos y fechas(<code>ca</code>, <code>es</code>, <code>en</code>)</li>
             </ul>

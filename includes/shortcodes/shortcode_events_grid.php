@@ -73,13 +73,10 @@ function entrapolis_shortcode_events($atts)
     }
 
     // Mapeo de categorías a colores
+    $generic_color = get_option('entrapolis_generic_color', '#e31e24');
+    $generic_text_color = get_option('entrapolis_generic_text_color', '#ffffff');
     $category_colors = array(
-        'Teatre' => '#ca1818',
-        'Ballet' => '#bf05a4',
-        'Música' => '#1a8cff',
-        'Teatre Familiar' => '#ea8b00',
-        'Dansa' => '#a1248e',
-        'Generic' => '#e31e24',
+        'Generic' => $generic_color,
     );
 
 
@@ -193,11 +190,16 @@ function entrapolis_shortcode_events($atts)
                             <figure class="entrapolis-event-figure"
                                 style="background-image: url('<?php echo esc_url($image); ?>');">
                                 <figcaption class="entrapolis-event-caption"
-                                    style="background-color:<?php echo $category_color; ?>;">
-                                    <h3 class="entrapolis-event-date"><?php echo $formatted_date; ?></h3>
-                                    <h2 class="entrapolis-event-title"><?php echo $title; ?></h2>
+                                    style="background-color:<?php echo $category_color; ?>; color:<?php echo $generic_text_color; ?> !important;">
+                                    <h3 class="entrapolis-event-date"
+                                        style="color:<?php echo $generic_text_color; ?> !important;">
+                                        <?php echo $formatted_date; ?></h3>
+                                    <h2 class="entrapolis-event-title"
+                                        style="color:<?php echo $generic_text_color; ?> !important;"><?php echo $title; ?></h2>
                                     <?php if ($description): ?>
-                                        <p class="entrapolis-event-excerpt"><?php echo $description; ?></p>
+                                        <p class="entrapolis-event-excerpt"
+                                            style="color:<?php echo $generic_text_color; ?> !important;"><?php echo $description; ?>
+                                        </p>
                                     <?php endif; ?>
                                 </figcaption>
                             </figure>
