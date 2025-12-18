@@ -228,7 +228,13 @@ function entrapolis_ajax_load_more_grid()
     $events_slice = array_slice($grouped_events, $offset, $limit);
     $has_more = ($offset + $limit) < $total_events;
 
-    $category_colors = entrapolis_get_category_colors();
+    // Obtener colores personalizados del admin
+    $generic_color = get_option('entrapolis_generic_color', '#e31e24');
+    $generic_text_color = get_option('entrapolis_generic_text_color', '#ffffff');
+
+    $category_colors = array(
+        'Generic' => $generic_color,
+    );
     $months_catalan = entrapolis_get_catalan_months();
 
     ob_start();
@@ -243,7 +249,7 @@ function entrapolis_ajax_load_more_grid()
         }
 
         $image = !empty($event['image']) ? str_replace('https://www.entrapolis.com/', 'https://cdn.perception.es/v7/_ep/', $event['image']) : '';
-        $category_color = isset($category_colors[$category]) ? $category_colors[$category] : '#707070';
+        $category_color = isset($category_colors[$category]) ? $category_colors[$category] : $generic_color;
 
         $first_date = $event['dates'][0];
         preg_match('/(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})/', $first_date, $matches);
@@ -268,11 +274,15 @@ function entrapolis_ajax_load_more_grid()
         <div class="entrapolis-event-card">
             <a class="entrapolis-event-link" href="<?php echo esc_url($detail_url); ?>">
                 <figure class="entrapolis-event-figure" style="background-image: url('<?php echo esc_url($image); ?>');">
-                    <figcaption class="entrapolis-event-caption" style="background-color:<?php echo $category_color; ?>;">
-                        <h3 class="entrapolis-event-date"><?php echo $formatted_date; ?></h3>
-                        <h2 class="entrapolis-event-title"><?php echo $title; ?></h2>
+                    <figcaption class="entrapolis-event-caption"
+                        style="background-color:<?php echo $category_color; ?>; color:<?php echo $generic_text_color; ?> !important;">
+                        <h3 class="entrapolis-event-date" style="color:<?php echo $generic_text_color; ?> !important;">
+                            <?php echo $formatted_date; ?></h3>
+                        <h2 class="entrapolis-event-title" style="color:<?php echo $generic_text_color; ?> !important;">
+                            <?php echo $title; ?></h2>
                         <?php if ($description): ?>
-                            <p class="entrapolis-event-excerpt"><?php echo $description; ?></p>
+                            <p class="entrapolis-event-excerpt" style="color:<?php echo $generic_text_color; ?> !important;">
+                                <?php echo $description; ?></p>
                         <?php endif; ?>
                     </figcaption>
                 </figure>
