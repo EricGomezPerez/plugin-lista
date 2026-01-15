@@ -19,7 +19,7 @@ function entrapolis_shortcode_calendar($atts)
     $org_id = intval($atts['org']);
     $months_ahead = intval($atts['months']);
     $lang = sanitize_text_field($atts['lang']);
-    $lang_code = in_array($lang, array('ca', 'es', 'en')) ? $lang : 'ca';
+    $lang_code = in_array($lang, array('ca', 'es', 'en', 'fr')) ? $lang : 'ca';
 
     // Traducciones
     $texts = array(
@@ -38,6 +38,11 @@ function entrapolis_shortcode_calendar($atts)
             'next' => 'Next month',
             'days_header' => array('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'),
         ),
+        'fr' => array(
+            'prev' => 'Mois précédent',
+            'next' => 'Mois suivant',
+            'days_header' => array('Lu', 'Ma', 'Me', 'Je', 'Ve', 'Sa', 'Di'),
+        ),
     );
     $t = $texts[$lang_code];
 
@@ -46,6 +51,7 @@ function entrapolis_shortcode_calendar($atts)
         'ca' => array('gener', 'febrer', 'març', 'abril', 'maig', 'juny', 'juliol', 'agost', 'setembre', 'octubre', 'novembre', 'desembre'),
         'es' => array('enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'),
         'en' => array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'),
+        'fr' => array('janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'),
     );
 
     $cache_key = 'entrapolis_events_' . $org_id;

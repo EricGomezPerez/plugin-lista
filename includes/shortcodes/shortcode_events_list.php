@@ -23,7 +23,7 @@ function entrapolis_shortcode_events_list($atts)
     $detail_page_slug = sanitize_text_field($atts['detail_page']);
     $limit = intval($atts['limit']);
     $lang = sanitize_text_field($atts['lang']);
-    $lang_code = in_array($lang, array('ca', 'es', 'en')) ? $lang : 'ca';
+    $lang_code = in_array($lang, array('ca', 'es', 'en', 'fr')) ? $lang : 'ca';
 
     // Traducciones
     $texts = array(
@@ -41,6 +41,11 @@ function entrapolis_shortcode_events_list($atts)
             'buy' => 'Buy tickets',
             'load_more' => 'Load more events',
             'loading' => 'Loading...',
+        ),
+        'fr' => array(
+            'buy' => 'Acheter des billets',
+            'load_more' => 'Charger plus d\'événements',
+            'loading' => 'Chargement...',
         ),
     );
     $t = $texts[$lang_code];
@@ -88,6 +93,20 @@ function entrapolis_shortcode_events_list($atts)
             10 => 'October',
             11 => 'November',
             12 => 'December'
+        ),
+        'fr' => array(
+            1 => 'janvier',
+            2 => 'février',
+            3 => 'mars',
+            4 => 'avril',
+            5 => 'mai',
+            6 => 'juin',
+            7 => 'juillet',
+            8 => 'août',
+            9 => 'septembre',
+            10 => 'octobre',
+            11 => 'novembre',
+            12 => 'décembre'
         )
     );
     $month_names = $months[$lang_code];
@@ -180,6 +199,8 @@ function entrapolis_shortcode_events_list($atts)
                                 $formatted_dates[] = "$day de $month_name de $year a las $hour:$minute";
                             } elseif ($lang_code === 'en') {
                                 $formatted_dates[] = "$month_name $day, $year at $hour:$minute";
+                            } elseif ($lang_code === 'fr') {
+                                $formatted_dates[] = "$day $month_name $year à $hour:$minute";
                             } else {
                                 $formatted_dates[] = "$day de $month_name de $year a les $hour:$minute";
                             }

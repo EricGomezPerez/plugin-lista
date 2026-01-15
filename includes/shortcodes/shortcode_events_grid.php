@@ -123,6 +123,20 @@ function entrapolis_shortcode_events($atts)
             10 => 'October',
             11 => 'November',
             12 => 'December'
+        ),
+        'fr' => array(
+            1 => 'janvier',
+            2 => 'février',
+            3 => 'mars',
+            4 => 'avril',
+            5 => 'mai',
+            6 => 'juin',
+            7 => 'juillet',
+            8 => 'août',
+            9 => 'septembre',
+            10 => 'octobre',
+            11 => 'novembre',
+            12 => 'décembre'
         )
     );
 
@@ -156,7 +170,7 @@ function entrapolis_shortcode_events($atts)
                     $first_date = $event['dates'][0];
                     preg_match('/(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})/', $first_date, $matches);
 
-                    $lang_code = in_array($lang, array('ca', 'es', 'en')) ? $lang : 'ca';
+                    $lang_code = in_array($lang, array('ca', 'es', 'en', 'fr')) ? $lang : 'ca';
                     $month_names = $months[$lang_code];
 
                     if ($matches) {
@@ -173,6 +187,8 @@ function entrapolis_shortcode_events($atts)
                             $formatted_date = "$day de $month_name de $year $hour:$minute";
                         } elseif ($lang_code === 'en') {
                             $formatted_date = "$month_name $day, $year $hour:$minute";
+                        } elseif ($lang_code === 'fr') {
+                            $formatted_date = "$day $month_name $year $hour:$minute";
                         } else {
                             $formatted_date = "$day de $month_name de $year $hour:$minute";
                         }
@@ -193,7 +209,8 @@ function entrapolis_shortcode_events($atts)
                                     style="background-color:<?php echo $category_color; ?>; color:<?php echo $generic_text_color; ?> !important;">
                                     <h3 class="entrapolis-event-date"
                                         style="color:<?php echo $generic_text_color; ?> !important;">
-                                        <?php echo $formatted_date; ?></h3>
+                                        <?php echo $formatted_date; ?>
+                                    </h3>
                                     <h2 class="entrapolis-event-title"
                                         style="color:<?php echo $generic_text_color; ?> !important;"><?php echo $title; ?></h2>
                                     <?php if ($description): ?>
@@ -214,14 +231,22 @@ function entrapolis_shortcode_events($atts)
                     $load_more_texts = array(
                         'ca' => 'Carregar més esdeveniments',
                         'es' => 'Cargar más eventos',
-                        'en' => 'Load more events'
+                        'en' => 'Load more events',
+                        'fr' => 'Charger plus d\'événements'
+                    );
+                    $loading_texts = array(
+                        'ca' => 'Carregant...',
+                        'es' => 'Cargando...',
+                        'en' => 'Loading...',
+                        'fr' => 'Chargement...'
                     );
                     $load_more_text = isset($load_more_texts[$lang_code]) ? $load_more_texts[$lang_code] : $load_more_texts['ca'];
+                    $loading_text = isset($loading_texts[$lang_code]) ? $loading_texts[$lang_code] : $loading_texts['ca'];
                     ?>
                     <button class="entrapolis-load-more-btn" data-target="<?php echo $unique_id; ?>">
                         <?php echo esc_html($load_more_text); ?>
                     </button>
-                    <span class="entrapolis-loading" style="display:none;">Carregant...</span>
+                    <span class="entrapolis-loading" style="display:none;"><?php echo esc_html($loading_text); ?></span>
                 </div>
             <?php endif; ?>
         </div>

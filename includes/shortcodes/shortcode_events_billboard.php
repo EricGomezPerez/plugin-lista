@@ -21,7 +21,7 @@ function entrapolis_shortcode_billboard($atts)
     $event_id = intval($atts['event_id']);
     $detail_page_slug = sanitize_text_field($atts['detail_page']);
     $lang = sanitize_text_field($atts['lang']);
-    $lang_code = in_array($lang, array('ca', 'es', 'en')) ? $lang : 'ca';
+    $lang_code = in_array($lang, array('ca', 'es', 'en', 'fr')) ? $lang : 'ca';
 
     // Traducciones
     $texts = array(
@@ -33,6 +33,9 @@ function entrapolis_shortcode_billboard($atts)
         ),
         'en' => array(
             'more_info' => 'More information',
+        ),
+        'fr' => array(
+            'more_info' => 'Plus d\'informations',
         ),
     );
     $t = $texts[$lang_code];
@@ -117,6 +120,20 @@ function entrapolis_shortcode_billboard($atts)
                 10 => 'October',
                 11 => 'November',
                 12 => 'December'
+            ),
+            'fr' => array(
+                1 => 'janvier',
+                2 => 'février',
+                3 => 'mars',
+                4 => 'avril',
+                5 => 'mai',
+                6 => 'juin',
+                7 => 'juillet',
+                8 => 'août',
+                9 => 'septembre',
+                10 => 'octobre',
+                11 => 'novembre',
+                12 => 'décembre'
             )
         );
         $month_names = $months[$lang_code];
@@ -133,6 +150,8 @@ function entrapolis_shortcode_billboard($atts)
                 $formatted_date = "$day de $month_name de $year a las $hour:$minute";
             } elseif ($lang_code === 'en') {
                 $formatted_date = "$month_name $day, $year at $hour:$minute";
+            } elseif ($lang_code === 'fr') {
+                $formatted_date = "$day $month_name $year à $hour:$minute";
             } else {
                 $formatted_date = "$day de $month_name de $year a les $hour:$minute";
             }

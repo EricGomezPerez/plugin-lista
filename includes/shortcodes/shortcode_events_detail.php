@@ -21,7 +21,7 @@ function entrapolis_shortcode_event_detail($atts)
         $event_id = intval($_GET['entrapolis_event']);
     }
 
-    $lang_code = in_array($lang, array('ca', 'es', 'en')) ? $lang : 'ca';
+    $lang_code = in_array($lang, array('ca', 'es', 'en', 'fr')) ? $lang : 'ca';
 
     // Traducciones
     $texts = array(
@@ -55,6 +55,16 @@ function entrapolis_shortcode_event_detail($atts)
             'buy' => 'Buy tickets',
             'default_location' => 'Main Theatre',
         ),
+        'fr' => array(
+            'no_event' => 'Aucun événement spécifié.',
+            'error_loading' => 'Erreur de chargement de l\'événement',
+            'not_found' => 'Événement non trouvé.',
+            'category' => 'Catégorie:',
+            'location' => 'Emplacement:',
+            'dates_title' => 'Dates disponibles',
+            'buy' => 'Acheter des billets',
+            'default_location' => 'Théâtre Principal',
+        ),
     );
     $t = $texts[$lang_code];
 
@@ -77,6 +87,38 @@ function entrapolis_shortcode_event_detail($atts)
     $event = $result['event'];
     $title = $event['title'];
     $image = $event['image'];
+
+    // Obtener detalles del evento con descripción multiidioma
+    $details_result = entrapolis_api_post('/api/event-details/', array(
+        'events_master_id' => $event_id,
+        'idioma_slug' => $lang_code,
+    ));
+
+    $description = '';
+    $location = $t['default_location'];
+
+    if (!is_wp_error($details_result) && !empty($details_result['event'])) {
+        $event_details = $details_result['event'];
+
+        // Determinar qué descripción usar según description_multi_idioma
+        if (!empty($event_details['description_multi_idioma']) && $event_details['description_multi_idioma'] == 1) {
+            $description = !empty($event_details['description_lang']) ? $event_details['description_lang'] : '';
+        } else {
+            $description = !empty($event_details['description']) ? $event_details['description'] : '';
+        }
+
+        // Construir ubicación con place y town
+        $place_parts = array();
+        if (!empty($event_details['place'])) {
+            $place_parts[] = esc_html($event_details['place']);
+        }
+        if (!empty($event_details['town'])) {
+            $place_parts[] = esc_html($event_details['town']);
+        }
+        if (!empty($place_parts)) {
+            $location = implode(', ', $place_parts);
+        }
+    }
 
     // Obtener todos los eventos con el mismo título e imagen
     $cache_key = 'entrapolis_events_' . ENTRAPOLIS_ORG_ID;
@@ -103,7 +145,6 @@ function entrapolis_shortcode_event_detail($atts)
     }
 
     $title = esc_html($title);
-    $location = isset($event['location']) && !empty($event['location']) ? esc_html($event['location']) : $t['default_location'];
     $image = !empty($image) ? str_replace('https://www.entrapolis.com/', 'https://cdn.perception.es/v7/_ep/', $image) : '';
     $url_widget = !empty($event['url_widget']) ? $event['url_widget'] : '';
     $url = !empty($event['url']) ? $event['url'] : '';
@@ -151,12 +192,25 @@ function entrapolis_shortcode_event_detail($atts)
             10 => 'October',
             11 => 'November',
             12 => 'December'
+        ),
+        'fr' => array(
+            1 => 'janvier',
+            2 => 'février',
+            3 => 'mars',
+            4 => 'avril',
+            5 => 'mai',
+            6 => 'juin',
+            7 => 'juillet',
+            8 => 'août',
+            9 => 'septembre',
+            10 => 'octobre',
+            11 => 'novembre',
+            12 => 'décembre'
         )
     );
     $month_names = $months[$lang_code];
 
     $category = isset($event['category']) ? esc_html($event['category']) : '';
-    $description = isset($event['description']) && !empty($event['description']) ? esc_html($event['description']) : '';
 
     ob_start();
     ?>
@@ -183,7 +237,7 @@ function entrapolis_shortcode_event_detail($atts)
 
                 <?php if ($description): ?>
                     <div class="entrapolis-event-description">
-                        <p><?php echo nl2br($description); ?></p>
+                        <?php echo wp_kses_post($description); ?>
                     </div>
                 <?php endif; ?>
 
@@ -229,6 +283,8 @@ function entrapolis_shortcode_event_detail($atts)
                                         $formatted_date = "$day de $month_name de $year a las $hour:$minute";
                                     } elseif ($lang_code === 'en') {
                                         $formatted_date = "$month_name $day, $year at $hour:$minute";
+                                    } elseif ($lang_code === 'fr') {
+                                        $formatted_date = "$day $month_name $year à $hour:$minute";
                                     } else {
                                         $formatted_date = "$day de $month_name de $year a les $hour:$minute";
                                     }
