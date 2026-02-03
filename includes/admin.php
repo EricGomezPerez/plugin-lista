@@ -37,7 +37,7 @@ function entrapolis_register_settings()
         'default' => ''
     ));
 
-    register_setting('entrapolis_settings_group', 'entrapolis_org_id', array(
+    register_setting('entrapolis_settings_group', 'entrapolis_uid', array(
         'type' => 'string',
         'sanitize_callback' => 'sanitize_text_field',
         'default' => ''
@@ -117,14 +117,15 @@ function entrapolis_settings_page()
 
                     <tr>
                         <th scope="row">
-                            <label for="entrapolis_org_id">ID de Organización</label>
+                            <label for="entrapolis_uid">Plugin WordPress UID</label>
                         </th>
                         <td>
-                            <input type="number" id="entrapolis_org_id" name="entrapolis_org_id"
-                                value="<?php echo esc_attr(get_option('entrapolis_org_id')); ?>" class="small-text" min="1"
-                                step="1">
+                            <input type="text" id="entrapolis_uid" name="entrapolis_uid"
+                                value="<?php echo esc_attr(get_option('entrapolis_uid')); ?>" class="regular-text"
+                                placeholder="Introduce el UID generado en Entrapolis...">
                             <p class="description">
-                                El ID de tu organización en Entrapolis (application_id).
+                                Identificador unico generado en Entrapolis para esta instalacion de WordPress. Obtendras
+                                este UID al configurar la integracion en Entrapolis.
                             </p>
                         </td>
                     </tr>

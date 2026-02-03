@@ -51,28 +51,65 @@ function entrapolis_get_api_token()
 }
 
 /**
- * Get organization ID from settings or wp-config
+ * Get organization UID from settings or wp-config
  */
-function entrapolis_get_org_id()
+function entrapolis_get_uid()
 {
     // 1. Check admin settings
-    $org_id = get_option('entrapolis_org_id', '');
-    if (!empty($org_id)) {
-        return intval($org_id);
+    $uid = get_option('entrapolis_uid', '');
+    if (!empty($uid)) {
+        return $uid;
     }
 
     // 2. Check wp-config constant
-    if (defined('ENTRAPOLIS_ORG_ID')) {
-        return ENTRAPOLIS_ORG_ID;
+    if (defined('ENTRAPOLIS_UID')) {
+        return ENTRAPOLIS_UID;
     }
 
     // 3. Default fallback
-    return 2910;
+    return '';
 }
 
-// Define constants for backwards compatibility
-define('ENTRAPOLIS_ORG_ID', entrapolis_get_org_id());
-define('ENTRAPOLIS_API_TOKEN', entrapolis_get_api_token());
+/**
+ * Get application ID from UID by calling the API
+ * This function caches the result to avoid multiple API calls
+ */
+function entrapolis_get_org_id_from_uid()
+{
+    $uid = entrapolis_get_uid();
+
+    if (empty($uid)) {
+        // If no UID, return 0 (no valid ID)
+        return 0;
+    }
+
+    // Check cache first
+    $cache_key = 'entrapolis_app_id_' . $uid;
+    $app_id = get_transient($cache_key);
+
+    if ($app_id !== false) {
+        return intval($app_id);
+    }
+
+    // Call API to get application_id from UID
+    $result = entrapolis_api_post('/api/application/', array(
+        'uid' => $uid,
+    ));
+
+    if (is_wp_error($result)) {
+        // If API call fails, return 0 (no valid ID)
+        return 0;
+    }
+
+    if (isset($result['application']['id'])) {
+        $app_id = intval($result['application']['id']);
+        // Cache for 1 hour
+        set_transient($cache_key, $app_id, 60 * 60);
+        return $app_id;
+    }
+
+    return 0;
+}
 
 /**
  * Helper per cridar a l'API d'Entrapolis
@@ -106,6 +143,20 @@ function entrapolis_api_post($endpoint, $body = array())
 
     return $data;
 }
+
+// Define API token constant FIRST (before using it in other functions)
+define('ENTRAPOLIS_API_TOKEN', entrapolis_get_api_token());
+
+/**
+ * Get organization ID from settings or wp-config
+ */
+function entrapolis_get_org_id()
+{
+    return entrapolis_get_org_id_from_uid();
+}
+
+// Define ORG_ID constant after API_TOKEN
+define('ENTRAPOLIS_ORG_ID', entrapolis_get_org_id());
 
 /**
  * Get Catalan month names
@@ -277,12 +328,15 @@ function entrapolis_ajax_load_more_grid()
                     <figcaption class="entrapolis-event-caption"
                         style="background-color:<?php echo $category_color; ?>; color:<?php echo $generic_text_color; ?> !important;">
                         <h3 class="entrapolis-event-date" style="color:<?php echo $generic_text_color; ?> !important;">
-                            <?php echo $formatted_date; ?></h3>
+                            <?php echo $formatted_date; ?>
+                        </h3>
                         <h2 class="entrapolis-event-title" style="color:<?php echo $generic_text_color; ?> !important;">
-                            <?php echo $title; ?></h2>
+                            <?php echo $title; ?>
+                        </h2>
                         <?php if ($description): ?>
                             <p class="entrapolis-event-excerpt" style="color:<?php echo $generic_text_color; ?> !important;">
-                                <?php echo $description; ?></p>
+                                <?php echo $description; ?>
+                            </p>
                         <?php endif; ?>
                     </figcaption>
                 </figure>
