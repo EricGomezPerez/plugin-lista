@@ -331,6 +331,9 @@ function entrapolis_shortcode_event_detail($atts)
                     if (purchaseWindow) {
                         overlay.style.display = 'block';
                         document.body.style.overflow = 'hidden';
+                        
+                        // Dar foco inmediato a la ventana de compra
+                        purchaseWindow.focus();
 
                         // Verificar si la ventana se cierra
                         const checkWindow = setInterval(function () {
@@ -344,13 +347,30 @@ function entrapolis_shortcode_event_detail($atts)
                 });
             });
 
-            // Cerrar overlay y ventana
-            closeBtn.addEventListener('click', function () {
+            // Click en overlay (fondo oscuro) para devolver el foco a la ventana de compra
+            overlay.addEventListener('click', function (e) {
+                if (e.target === overlay && purchaseWindow && !purchaseWindow.closed) {
+                    purchaseWindow.focus();
+                }
+            });
+
+            // Cerrar overlay y ventana solo con el botón X
+            closeBtn.addEventListener('click', function (e) {
+                e.stopPropagation();
                 if (purchaseWindow && !purchaseWindow.closed) {
                     purchaseWindow.close();
                 }
                 overlay.style.display = 'none';
                 document.body.style.overflow = '';
+            });
+
+            // Mantener el foco en la ventana de compra cuando la ventana principal recupera el foco
+            window.addEventListener('focus', function () {
+                if (overlay.style.display === 'block' && purchaseWindow && !purchaseWindow.closed) {
+                    setTimeout(function() {
+                        purchaseWindow.focus();
+                    }, 100);
+                }
             });
         })();
     </script>

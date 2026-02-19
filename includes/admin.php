@@ -86,7 +86,7 @@ function entrapolis_settings_page()
     settings_errors('entrapolis_messages');
     ?>
     <div class="wrap">
-        <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
+        <h1><?php echo esc_html(get_admin_page_title()); ?> <span style="font-size: 0.6em; color: #666; font-weight: normal;">v<?php echo esc_html(ENTRAPOLIS_VERSION); ?></span></h1>
 
         <div class="entrapolis-admin-header">
             <p>Configura tu integración con Entrapolis. Necesitas un API token y tu ID de organización para que el plugin
