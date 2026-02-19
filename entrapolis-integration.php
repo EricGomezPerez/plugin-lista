@@ -1,11 +1,11 @@
 <?php
 /**
  * Plugin Name: Entrapolis
- * Plugin URI: https://perception.es
- * Description: Integración con Entrapolis — shortcodes para listar esdeveniments, calendari i widget de compra.
- * Version: 0.2.1
- * Author: Perception
- * Author URI: https://perception.es
+ * Plugin URI: https://blog.entrapolis.com/entrapolis-estrena-mejoras-qr-automatico-y-pronto-integracion-con-wordpress/
+ * Description: Integración con Entrapolis — shortcodes para listar eventos, calendario y widget de compra.
+ * Version: 0.2.3
+ * Author: Entrapolis.com
+ * Author URI: https://www.entrapolis.com
  * Text Domain: entrapolis-plugin
  * Domain Path: /languages
  * License: GPLv2 or later
@@ -17,7 +17,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin paths and version
-define('ENTRAPOLIS_VERSION', '0.2.1');
+define('ENTRAPOLIS_VERSION', '0.2.3');
 define('ENTRAPOLIS_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('ENTRAPOLIS_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('ENTRAPOLIS_PLUGIN_FILE', __FILE__);
