@@ -3,7 +3,7 @@
  * Plugin Name: Entrapolis
  * Plugin URI: https://blog.entrapolis.com/entrapolis-estrena-mejoras-qr-automatico-y-pronto-integracion-con-wordpress/
  * Description: Integración con Entrapolis — shortcodes para listar eventos, calendario y widget de compra.
- * Version: 0.2.5
+ * Version: 0.2.6
  * Author: Entrapolis.com
  * Author URI: https://www.entrapolis.com
  * Text Domain: entrapolis-plugin
@@ -17,7 +17,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin paths and version
-define('ENTRAPOLIS_VERSION', '0.2.5');
+define('ENTRAPOLIS_VERSION', '0.2.6');
 define('ENTRAPOLIS_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('ENTRAPOLIS_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('ENTRAPOLIS_PLUGIN_FILE', __FILE__);
