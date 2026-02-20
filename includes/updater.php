@@ -1,32 +1,38 @@
 <?php
 // includes/updater.php
-if (!defined('ABSPATH')) exit;
+if (!defined('ABSPATH'))
+  exit;
 
 // 1) Ajusta estas 2 líneas
 define('ENTRAPOLIS_UPDATE_JSON_URL', 'https://raw.githubusercontent.com/EricGomezPerez/plugin-lista/main/update.json');
-define('ENTRAPOLIS_PLUGIN_BASENAME', plugin_basename(__DIR__ . '/../entrapolis-integration.php'));
+define('ENTRAPOLIS_PLUGIN_BASENAME', plugin_basename(realpath(__DIR__ . '/../entrapolis-integration.php')));
 
 // 2) Ajusta este "slug" a tu gusto (solo se usa en "Ver detalles")
 define('ENTRAPOLIS_PLUGIN_SLUG', 'entrapolis-plugin-lista');
 
-function entrapolis_updater_get_remote_info() {
+function entrapolis_updater_get_remote_info()
+{
   $cache_key = 'entrapolis_update_info';
   $cached = get_transient($cache_key);
-  if ($cached !== false) return $cached;
+  if ($cached !== false)
+    return $cached;
 
   $res = wp_remote_get(ENTRAPOLIS_UPDATE_JSON_URL, [
     'timeout' => 10,
     'headers' => ['Accept' => 'application/json'],
   ]);
 
-  if (is_wp_error($res)) return null;
+  if (is_wp_error($res))
+    return null;
 
   $code = wp_remote_retrieve_response_code($res);
-  if ($code !== 200) return null;
+  if ($code !== 200)
+    return null;
 
   $body = wp_remote_retrieve_body($res);
   $data = json_decode($body, true);
-  if (!is_array($data) || empty($data['version']) || empty($data['download_url'])) return null;
+  if (!is_array($data) || empty($data['version']) || empty($data['download_url']))
+    return null;
 
   // Cache 6h
   set_transient($cache_key, $data, 6 * HOUR_IN_SECONDS);
@@ -34,16 +40,20 @@ function entrapolis_updater_get_remote_info() {
 }
 
 add_filter('site_transient_update_plugins', function ($transient) {
-  if (!is_object($transient) || empty($transient->checked)) return $transient;
+  if (!is_object($transient) || empty($transient->checked))
+    return $transient;
 
-  if (!defined('ENTRAPOLIS_VERSION')) return $transient;
+  if (!defined('ENTRAPOLIS_VERSION'))
+    return $transient;
   $current = ENTRAPOLIS_VERSION;
 
   $remote = entrapolis_updater_get_remote_info();
-  if (!$remote) return $transient;
+  if (!$remote)
+    return $transient;
 
   $new_version = (string) $remote['version'];
-  if (version_compare($current, $new_version, '>=')) return $transient;
+  if (version_compare($current, $new_version, '>='))
+    return $transient;
 
   $update = (object) [
     'slug' => ENTRAPOLIS_PLUGIN_SLUG,
@@ -61,11 +71,14 @@ add_filter('site_transient_update_plugins', function ($transient) {
 });
 
 add_filter('plugins_api', function ($result, $action, $args) {
-  if ($action !== 'plugin_information') return $result;
-  if (empty($args->slug) || $args->slug !== ENTRAPOLIS_PLUGIN_SLUG) return $result;
+  if ($action !== 'plugin_information')
+    return $result;
+  if (empty($args->slug) || $args->slug !== ENTRAPOLIS_PLUGIN_SLUG)
+    return $result;
 
   $remote = entrapolis_updater_get_remote_info();
-  if (!$remote) return $result;
+  if (!$remote)
+    return $result;
 
   $info = (object) [
     'name' => 'Entrapolis Plugin',
