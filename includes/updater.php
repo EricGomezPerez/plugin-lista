@@ -25,6 +25,11 @@ function entrapolis_updater_get_remote_info()
   if (is_wp_error($res))
     return null;
 
+  if (isset($_GET['force_update'])) {
+    delete_transient('update_plugins');
+    delete_transient('entrapolis_update_info');
+  }
+
   $code = wp_remote_retrieve_response_code($res);
   if ($code !== 200)
     return null;
