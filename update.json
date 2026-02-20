@@ -1,0 +1,9 @@
+{
+  "version": "0.2.7",
+  "download_url": "https://github.com/EricGomezPerez/plugin-lista/releases/download/v0.2.7/entrapolis-plugin-lista-0.2.7.zip",
+  "homepage": "https://github.com/EricGomezPerez/plugin-lista",
+  "requires": "5.8",
+  "tested": "6.5",
+  "requires_php": "7.4",
+  "changelog": "- Mejoras internas del sistema de integración\n- Optimización del rendimiento\n- Ajustes menores y correcciones"
+}
